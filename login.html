@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in | e-HCMS</title>
+
+  <!-- Fonts (needs internet while developing) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --beige: #f4f0e6;
+      --green: #0f6a1b;
+      --green-dark: #0a5214;
+      --green-link: #1b6b27;
+      --text: #1b1b1b;
+      --input-border: #b9b9b9;
+      --error: #b3261e;
+
+      /* How much beige covers the background image.
+         0 = image shown fully, 1 = image completely hidden. */
+      --bg-overlay: 0.82;
+
+      /* BACKGROUND IMAGE SIZE AND POSITION (change these two lines to adjust)
+         Size:     "auto 75%" = medium. Smaller number = smaller image (60%, 50%...)
+         Position: "center 15%" = centered across, near the top.
+                   Bigger second number moves it down (30%, 50%...) */
+      --bg-size: auto 75%;
+      --bg-position: center 15%;
+
+      --page-pad: clamp(16px, 4vw, 48px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: "Roboto", Arial, sans-serif;
+      color: var(--text);
+      background-color: var(--beige);
+      /* the image itself is added by the script at the bottom */
+      background-size: var(--bg-size);
+      background-position: var(--bg-position);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      isolation: isolate;
+      position: relative;
+    }
+
+    /* beige wash that fades the background image */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(244, 240, 230, var(--bg-overlay));
+      z-index: -1;
+    }
+
+    a { color: inherit; }
+
+    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* ---------------- Page centre ---------------- */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px var(--page-pad);
+    }
+
+    /* ---------------- Login card ---------------- */
+    .login-card {
+      width: 100%;
+      max-width: 340px;
+      padding: 30px 22px 28px;
+      background: rgba(255, 255, 255, 0.82);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .brand {
+      display: block;
+      text-align: center;
+      margin-bottom: 22px;
+      text-decoration: none;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .brand-mark { width: 54px; height: 40px; flex-shrink: 0; }
+
+    .brand-mark img { width: 54px; height: 40px; object-fit: contain; display: none; }
+
+    .brand-title {
+      font-family: "Merriweather", Georgia, serif;
+      font-weight: 900;
+      font-size: 36px;
+      line-height: 1;
+      color: var(--green);
+    }
+
+    .brand-sub {
+      margin: 8px 0 0;
+      font-family: "Merriweather", Georgia, serif;
+      font-size: 13px;
+      color: #222222;
+    }
+
+    /* ---------------- Form ---------------- */
+    .field { position: relative; margin-bottom: 14px; }
+
+    .field svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      transform: translateY(-50%);
+      stroke: #555555;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .field input {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px 0 44px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
+      background: #ffffff;
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+    }
+
+    .field input::placeholder { color: #6b6b6b; }
+
+    .field input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(15, 106, 27, 0.2);
+    }
+
+    .field input[aria-invalid="true"] { border-color: var(--error); }
+
+    .forgot {
+      display: block;
+      width: fit-content;
+      margin: 4px 0 18px auto;
+      font-size: 15px;
+      color: var(--green-link);
+      text-decoration: none;
+    }
+
+    .forgot:hover { text-decoration: underline; }
+
+    .btn-login {
+      width: 100%;
+      height: 46px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #ffffff;
+      background: linear-gradient(#17802a, var(--green-dark));
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(10, 82, 20, 0.35);
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .btn-login:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    .btn-login:disabled { opacity: 0.7; cursor: wait; transform: none; }
+
+    .form-message {
+      min-height: 20px;
+      margin: 14px 0 0;
+      font-size: 14px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .form-message.error { color: var(--error); }
+    .form-message.info  { color: var(--green-link); }
+
+    /* ---------------- Footer ---------------- */
+    .site-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      margin: 0 var(--page-pad);
+      padding: 16px 0 18px;
+      border-top: 1px solid rgba(0, 0, 0, 0.15);
+      font-size: 15px;
+    }
+
+    .site-footer a { color: var(--text); }
+
+    .footer-right a:last-child { color: var(--green-link); }
+
+    .ext-icon {
+      width: 12px;
+      height: 12px;
+      margin-left: 3px;
+      vertical-align: -1px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    @media (max-width: 480px) {
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn-login { transition: none; }
+      .btn-login:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <section class="login-card" aria-labelledby="login-title">
+
+      <!-- Brand block -->
+      <a class="brand" href="index.html" aria-label="e-HCMS home">
+        <div class="brand-row">
+          <span class="brand-mark">
+            <!-- Fallback flag icon, replaced automatically if images/login_logo.png exists -->
+            <svg id="fallbackMark" viewBox="0 0 54 40" aria-hidden="true">
+              <rect x="2" y="3"  width="50" height="10" fill="#111111"/>
+              <rect x="2" y="13" width="50" height="1.5" fill="#ffffff"/>
+              <rect x="2" y="14.5" width="50" height="11" fill="#bb0000"/>
+              <rect x="2" y="26" width="50" height="1.5" fill="#ffffff"/>
+              <rect x="2" y="27.5" width="50" height="10" fill="#006600"/>
+              <ellipse cx="27" cy="20" rx="6" ry="9" fill="#bb0000" stroke="#ffffff" stroke-width="1.5"/>
+              <rect x="20" y="19" width="14" height="2" fill="#111111"/>
+            </svg>
+            <img id="loginLogo" alt="">
+          </span>
+          <span class="brand-title" id="login-title">e-HCMS</span>
+        </div>
+        <p class="brand-sub">Honorary Consul Management System.</p>
+      </a>
+
+      <!-- Login form -->
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label class="sr-only" for="username">Official email or username</label>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+          </svg>
+          <input type="text" id="username" name="username" placeholder="Official Email/Username"
+                 autocomplete="username" required>
+        </div>
+
+        <div class="field">
+          <label class="sr-only" for="password">Password</label>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="10" rx="2"/>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+            <circle cx="12" cy="16" r="1"/>
+          </svg>
+          <input type="password" id="password" name="password" placeholder="Password"
+                 autocomplete="current-password" required>
+        </div>
+
+        <a class="forgot" href="forgot-password.html">Forgot Password?</a>
+
+        <button type="submit" class="btn-login" id="loginBtn">Log in</button>
+
+        <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a href="accessibility.html">Accessibility Statement</a>
+    <div class="footer-right">
+      <a href="help.html">Help Center
+        <svg class="ext-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>
+        </svg></a>
+      &nbsp;|&nbsp;
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================
+       1) FORM BEHAVIOUR
+       ========================================================== */
+    var form    = document.getElementById("loginForm");
+    var userEl  = document.getElementById("username");
+    var passEl  = document.getElementById("password");
+    var btn     = document.getElementById("loginBtn");
+    var message = document.getElementById("formMessage");
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "form-message " + type;
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();          // stop the page from reloading
+
+      var username = userEl.value.trim();
+      var password = passEl.value;
+
+      userEl.removeAttribute("aria-invalid");
+      passEl.removeAttribute("aria-invalid");
+
+      if (!username) {
+        userEl.setAttribute("aria-invalid", "true");
+        showMessage("Enter your official email or username.", "error");
+        userEl.focus();
+        return;
+      }
+      if (!password) {
+        passEl.setAttribute("aria-invalid", "true");
+        showMessage("Enter your password.", "error");
+        passEl.focus();
+        return;
+      }
+
+      /* ------------------------------------------------------
+         TODO: CONNECT THE REAL LOGIN API HERE
+         When the second group gives you the login endpoint,
+         replace the line below with something like:
+
+         btn.disabled = true;
+         btn.textContent = "Logging in...";
+         fetch("https://THEIR-API-URL/login", {
+           method: "POST",
+           headers: { "Content-Type": "application/json" },
+           body: JSON.stringify({ username: username, password: password })
+         })
+           .then(function (res) {
+             if (!res.ok) throw new Error("Wrong details");
+             return res.json();
+           })
+           .then(function (data) {
+             // save the token if they send one, then go to the dashboard
+             window.location.href = "dashboard.html";
+           })
+           .catch(function () {
+             showMessage("Login failed. Check your details and try again.", "error");
+             btn.disabled = false;
+             btn.textContent = "Log in";
+           });
+         ------------------------------------------------------ */
+      showMessage("Details look good. Login will work once the API is connected.", "info");
+    });
+
+    /* ==========================================================
+       2) IMAGE FINDER (same as the landing page)
+       Tries several folders and file endings and uses the first
+       one that loads. The console (F12) prints what it found.
+       Red 404 lines while it searches are normal.
+       ========================================================== */
+    var FOLDERS = ["images", "image", "Images", "Image", "."];
+    var ENDINGS = [".png", ".PNG", ".jpg", ".jpeg", ".webp", ".png.png"];
+    var cache = {};
+
+    function nameVariants(name) {
+      var list = [
+        name,
+        name.replace(/_/g, "-"),
+        name.replace(/_/g, " "),
+        name.replace(/_/g, ""),
+        name.charAt(0).toUpperCase() + name.slice(1),
+        name.toUpperCase(),
+        name + " (1)"
+      ];
+      return list.filter(function (n, i) { return list.indexOf(n) === i; });
+    }
+
+    // exact = true  -> only try the exact name (used for optional images)
+    function findImage(name, exact) {
+      var key = name + (exact ? "|exact" : "");
+      if (cache[key]) return cache[key];
+
+      cache[key] = new Promise(function (resolve) {
+        var tries = [];
+        (exact ? [name] : nameVariants(name)).forEach(function (variant) {
+          FOLDERS.forEach(function (folder) {
+            ENDINGS.forEach(function (end) {
+              tries.push(folder + "/" + variant + end);
+            });
+          });
+        });
+
+        var i = 0;
+        (function next() {
+          if (i >= tries.length) {
+            if (!exact) console.error("Could not find '" + name + "'. Check the exact file name inside the images folder.");
+            resolve(null);
+            return;
+          }
+          var test = new Image();
+          test.onload = function () {
+            console.log("Found " + name + " -> " + tries[i]);
+            resolve(tries[i]);
+          };
+          test.onerror = function () { i++; next(); };
+          test.src = tries[i];
+        })();
+      });
+
+      return cache[key];
+    }
+
+    // Background image on the whole page
+    findImage("background_image").then(function (path) {
+      if (path) document.body.style.backgroundImage = 'url("' + path + '")';
+    });
+
+    // Optional: your own e-HCMS logo icon (flag + handshake).
+    // Save it as images/login_logo.png and it replaces the built-in flag.
+    findImage("login_logo", true).then(function (path) {
+      if (path) {
+        var img = document.getElementById("loginLogo");
+        img.src = path;
+        img.style.display = "block";
+        document.getElementById("fallbackMark").style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

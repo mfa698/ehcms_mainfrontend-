@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EHCMS | Ministry of Foreign and Diaspora Affairs</title>
+
+  <!-- Fonts (needs internet while developing) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green: #2f9e2f;
+      --green-dark: #247a24;
+      --text: #111111;
+      --header-bg: #e3e3e3;
+      --hero-bg: #ececec;
+      --footer-bg: #ebebeb;
+      --border: #555555;
+      --nav-active: #c8c8c8;
+
+      /* How much white covers the background image.
+         0 = image shown fully, 1 = image completely hidden.
+         Raise it to make the background fainter. */
+      --hero-overlay: 0.78;
+
+      --page-pad: clamp(16px, 4vw, 56px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+      color: var(--text);
+      background: var(--hero-bg);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+
+    /* ---------------- Header ---------------- */
+    .site-header {
+      background: var(--header-bg);
+      padding: 22px var(--page-pad) 0;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 8px; }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .brand-name, .ministry-label {
+      font-size: 17px;
+      line-height: 1.15;
+      text-align: center;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 16px; }
+
+    .ministry-label { text-align: left; }
+
+    .avatar { width: 58px; height: 58px; flex-shrink: 0; }
+
+    /* ---------------- Buttons ---------------- */
+    .btn {
+      display: inline-block;
+      font-family: "Roboto", Arial, sans-serif;
+      font-weight: 400;
+      color: var(--text);
+      background: #f2f2f2;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn:hover { background: #ffffff; }
+
+    .btn-login {
+      padding: 12px 20px;
+      font-size: 16px;
+      text-transform: uppercase;
+      background: #ededed;
+      border-color: #9a9a9a;
+    }
+
+    .btn-cta {
+      padding: 15px 26px;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 8px 20px rgba(47, 158, 47, 0.35);
+    }
+
+    .btn-cta:hover {
+      background: var(--green-dark);
+      border-color: var(--green-dark);
+      transform: translateY(-2px);
+    }
+
+    /* ---------------- Navigation ---------------- */
+    .main-nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 18px 0 16px;
+      font-family: "Roboto", Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    .main-nav a { padding: 8px 14px; border-radius: 6px; }
+
+    .main-nav a:hover { background: #d4d4d4; }
+
+    .main-nav a.active { background: var(--nav-active); }
+
+    /* ---------------- Kenyan flag strip ---------------- */
+    .flag-strip {
+      height: 8px;
+      background: linear-gradient(
+        to bottom,
+        #000000 0,    #000000 2px,
+        #ffffff 2px,  #ffffff 3px,
+        #bb0000 3px,  #bb0000 5px,
+        #ffffff 5px,  #ffffff 6px,
+        #006600 6px,  #006600 8px
+      );
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ---------------- Hero ---------------- */
+    /* The background image is added by the script at the bottom of the page */
+    .hero {
+      position: relative;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 40px;
+      padding: 56px var(--page-pad);
+      background-color: var(--hero-bg);
+      /* Real size/position are set in the script at the bottom (BACKGROUND SETTINGS).
+         These are only fallbacks. */
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      isolation: isolate;
+    }
+
+    /* white wash that fades the background image */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, var(--hero-overlay));
+      z-index: -1;
+    }
+
+    /* The boxed card around the hero text */
+    .hero-card {
+      max-width: 620px;
+      margin-left: clamp(0px, 4vw, 64px);
+      padding: clamp(28px, 4vw, 48px);
+      background: rgba(255, 255, 255, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-left: 6px solid var(--green);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .hero-card h1 {
+      margin: 0;
+      font-family: "Roboto", Arial, sans-serif;
+      font-weight: 900;
+      font-size: clamp(56px, 8vw, 84px);
+      line-height: 1;
+      letter-spacing: 1px;
+      color: var(--green);
+    }
+
+    .tagline {
+      margin: 14px 0 18px;
+      font-size: clamp(20px, 2.4vw, 26px);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .description {
+      margin: 0 0 30px;
+      max-width: 28em;
+      font-size: clamp(16px, 1.8vw, 19px);
+      line-height: 1.5;
+      color: #333333;
+    }
+
+    .hero-emblem { display: flex; justify-content: center; }
+
+    .hero-emblem img {
+      width: min(100%, 340px);
+      height: auto;
+      filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.2));
+    }
+
+    /* ---------------- Footer ---------------- */
+    .site-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      padding: 18px var(--page-pad);
+      background: var(--footer-bg);
+      border-top: 1px solid #d0d0d0;
+      font-size: 15px;
+    }
+
+    .site-footer p { margin: 0; }
+
+    .footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+
+    .footer-links a:hover { text-decoration: underline; }
+
+    /* ---------------- Tablet & mobile ---------------- */
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-card { margin-left: 0; max-width: none; }
+      .hero-emblem { order: -1; }
+      .hero-emblem img { width: min(60%, 240px); }
+    }
+
+    @media (max-width: 600px) {
+      .header-top { flex-wrap: wrap; justify-content: center; }
+      .ministry-label { display: none; }
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn { transition: none; }
+      .btn-cta:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="header-top">
+      <a class="brand" href="index.html">
+        <!-- No src here on purpose: the script at the bottom finds the file -->
+        <img data-name="logo" alt="Ministry logo" class="brand-logo">
+        <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
+      </a>
+
+      <div class="header-right">
+        <span class="ministry-label">ministry of foreign<br>and diaspora affairs</span>
+
+        <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="User profile">
+          <circle cx="32" cy="32" r="32" fill="#d4d4d4"/>
+          <circle cx="32" cy="24" r="10" fill="#8e8e8e"/>
+          <path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/>
+        </svg>
+
+        <a href="login.html" class="btn btn-login">Login</a>
+      </div>
+    </div>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html" class="active" aria-current="page">Home</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Kenyan flag strip -->
+  <div class="flag-strip" aria-hidden="true"></div>
+
+  <!-- ============ HERO ============ -->
+  <main class="hero" id="hero">
+    <div class="hero-card">
+      <h1>EHCMS</h1>
+      <p class="tagline">A Platform for the Global Kenyan Community</p>
+      <p class="description">
+        Secure, efficient online services for diaspora and consular
+        affairs, connecting Kenyans worldwide.
+      </p>
+      <a href="services.html" class="btn btn-cta">Access EHCMS services</a>
+    </div>
+
+    <div class="hero-emblem">
+      <img data-name="coat_of_arms" alt="Kenya coat of arms with the motto Harambee">
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <p>Copyright <span id="year">2026</span> Republic of Kenya</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#">Essential links</a>
+      <a href="contact.html">Contact us</a>
+      <a href="#">Government links</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    /* ==========================================================
+       IMAGE FINDER
+       Looks for each image in several likely folders, file name
+       spellings and endings, and uses the first one that loads.
+       The console (F12) prints the path that worked, e.g.
+         Found logo -> images/logo.png
+       Red 404 lines in the console while it searches are normal.
+       Only the "Found" and "Could not find" lines matter.
+       ========================================================== */
+    var FOLDERS = ["images", "image", "Images", "Image", "."];
+    var ENDINGS = [".png", ".PNG", ".jpg", ".jpeg", ".webp", ".png.png"];
+    var cache = {};
+
+    function nameVariants(name) {
+      var list = [
+        name,
+        name.replace(/_/g, "-"),
+        name.replace(/_/g, " "),
+        name.replace(/_/g, ""),
+        name.replace(/s$/, ""),                 // coat_of_arm
+        name.charAt(0).toUpperCase() + name.slice(1),
+        name.toUpperCase(),
+        name + " (1)",
+        name + "-removebg-preview"
+      ];
+      return list.filter(function (n, i) { return list.indexOf(n) === i; });
+    }
+
+    function findImage(name) {
+      if (cache[name]) return cache[name];
+
+      cache[name] = new Promise(function (resolve) {
+        var tries = [];
+        nameVariants(name).forEach(function (variant) {
+          FOLDERS.forEach(function (folder) {
+            ENDINGS.forEach(function (end) {
+              tries.push(folder + "/" + variant + end);
+            });
+          });
+        });
+
+        var i = 0;
+        (function next() {
+          if (i >= tries.length) {
+            console.error("Could not find '" + name + "'. Check the exact file name inside the images folder.");
+            resolve(null);
+            return;
+          }
+          var test = new Image();
+          test.onload = function () {
+            console.log("Found " + name + " -> " + tries[i]);
+            resolve(tries[i]);
+          };
+          test.onerror = function () { i++; next(); };
+          test.src = tries[i];
+        })();
+      });
+
+      return cache[name];
+    }
+
+    // Logo and coat of arms
+    document.querySelectorAll("img[data-name]").forEach(function (img) {
+      var name = img.getAttribute("data-name");
+      findImage(name).then(function (path) {
+        if (path) {
+          img.src = path;
+        } else if (name === "coat_of_arms") {
+          // Fallback: show the logo in the emblem spot so the page is not empty
+          findImage("logo").then(function (logoPath) {
+            if (logoPath) {
+              console.warn("coat_of_arms not found, using the logo image instead.");
+              img.src = logoPath;
+            }
+          });
+        }
+      });
+    });
+
+    /* ==========================================================
+       BACKGROUND SETTINGS  (change ONLY these two lines)
+       size:     "contain" = the whole image fits in the page, nothing cut off.
+                 "cover"   = fills the page but crops and zooms (not wanted).
+                 "auto 85%" = a bit smaller than full height, if "contain" feels big.
+       position: "center" = middle of the page.
+                 "center top" / "right center" if you want to shift it later.
+       ========================================================== */
+    var BG_SIZE     = "contain";
+    var BG_POSITION = "center";
+
+    findImage("background_image").then(function (path) {
+      if (path) {
+        var hero = document.getElementById("hero");
+        hero.style.backgroundImage    = 'url("' + path + '")';
+        hero.style.backgroundRepeat   = "no-repeat";
+        hero.style.backgroundSize     = BG_SIZE;
+        hero.style.backgroundPosition = BG_POSITION;
+        console.log("Background applied -> size: " + BG_SIZE + " | position: " + BG_POSITION);
+      }
+    });
+  </script>
+</body>
+</html>
