@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile | e-HCMS Honorary Consul</title>
+
+  <!-- Fonts (needs internet while developing) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green: #2f9e2f; --green-dark: #247a24; --text: #111111;
+      --header-bg: #e3e3e3; --hero-bg: #ececec; --footer-bg: #ebebeb;
+      --border: #555555; --nav-active: #c8c8c8; --error: #b3261e;
+      --hero-overlay: 0.82;   /* 0 = background image fully visible, 1 = hidden */
+      --page-pad: clamp(16px, 4vw, 56px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+           font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; color: var(--text); background: var(--hero-bg); }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Header ---------- */
+    .site-header { background: var(--header-bg); padding: 22px var(--page-pad) 0; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+    .brand-name { font-size: 17px; line-height: 1.15; text-align: center; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .user-label { font-size: 17px; line-height: 1.15; text-align: right; }
+    .user-label small { display: block; font-size: 14px; color: #555555; }
+    .avatar { width: 52px; height: 52px; flex-shrink: 0; }
+    .btn { display: inline-block; font-family: "Roboto", Arial, sans-serif; color: var(--text); background: #f2f2f2;
+           border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: background 0.15s ease; }
+    .btn:hover { background: #ffffff; }
+    .btn-small { padding: 11px 18px; font-size: 15px; text-transform: uppercase; background: #ededed; border-color: #9a9a9a; }
+    .btn-primary { padding: 13px 26px; font-size: 16px; font-weight: 500; color: #ffffff; background: var(--green); border-color: var(--green); }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn:disabled { opacity: 0.6; cursor: wait; }
+
+    .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 18px 0 16px;
+                font-family: "Roboto", Arial, sans-serif; font-size: 16px; }
+    .main-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px; }
+    .main-nav a:hover { background: #d4d4d4; }
+    .main-nav a.active { background: var(--nav-active); }
+    .main-nav a.soon { color: #6a6a6a; cursor: not-allowed; }
+    .main-nav a.soon:hover { background: transparent; }
+    .nav-badge { min-width: 20px; padding: 1px 6px; font-size: 12px; font-weight: 700; text-align: center;
+                 color: #ffffff; background: #b3261e; border-radius: 10px; }
+
+    .flag-strip { height: 8px; position: relative; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      background: linear-gradient(to bottom, #000 0, #000 2px, #fff 2px, #fff 3px, #bb0000 3px, #bb0000 5px, #fff 5px, #fff 6px, #006600 6px, #006600 8px); }
+
+    /* ---------- Page ---------- */
+    .page { position: relative; flex: 1; padding: 36px var(--page-pad) 48px; background-color: var(--hero-bg);
+            background-size: contain; background-position: center; background-repeat: no-repeat; isolation: isolate; }
+    .page::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,var(--hero-overlay)); z-index: -1; }
+    .container { max-width: 980px; margin: 0 auto; }
+    .demo-banner { margin: 0 0 18px; padding: 10px 16px; font-family: "Roboto", Arial, sans-serif; font-size: 14px;
+                   color: #5c4400; background: #fff3cd; border: 1px solid #f0d98a; border-radius: 10px; }
+    .page-title { margin: 0 0 4px; font-family: "Roboto", Arial, sans-serif; font-weight: 900;
+                  font-size: clamp(28px, 4vw, 38px); line-height: 1.15; color: var(--green); }
+    .page-sub { margin: 0 0 22px; font-size: 18px; color: #333333; }
+
+    .card { padding: 22px 24px; margin-bottom: 20px; background: rgba(255,255,255,0.78);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 14px 40px rgba(0,0,0,0.1); }
+    .card h2 { margin: 0 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700;
+               letter-spacing: 0.7px; text-transform: uppercase; color: #555555; }
+    .badge { display: inline-block; padding: 5px 12px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; font-weight: 700; border-radius: 999px; }
+    .badge.ok { color: #14551b; background: #d9f2dc; } .badge.warn { color: #6b4a00; background: #fff0c2; }
+    .badge.orange { color: #7a3a00; background: #ffe0c2; } .badge.danger { color: #7a1a14; background: #fde0dd; }
+    .badge.grey { color: #444444; background: #e6e6e6; }
+
+    .state-box { padding: 36px 24px; text-align: center; font-size: 18px; }
+    .state-box .btn { margin-top: 14px; padding: 11px 22px; font-size: 16px; }
+    .spinner { width: 34px; height: 34px; margin: 0 auto 12px; border: 4px solid #d8d8d8; border-top-color: var(--green);
+               border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- Profile details ---------- */
+    .details { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; margin: 0; }
+    .details dt { font-family: "Roboto", Arial, sans-serif; font-size: 13px; color: #666666; margin-bottom: 3px; }
+    .details dd { margin: 0; font-size: 19px; line-height: 1.35; overflow-wrap: anywhere; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 4px 12px; font-size: 16px; background: #e6f1e7; border-radius: 999px; }
+    .note { margin: 16px 0 0; font-size: 15px; color: #555555; }
+
+    /* ---------- Contact form ---------- */
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 6px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; font-weight: 500; }
+    .field input { width: 100%; height: 46px; padding: 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 16px;
+                   background: #ffffff; border: 1px solid #b9b9b9; border-radius: 8px; }
+    .field input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,158,47,0.2); }
+    .field input[aria-invalid="true"] { border-color: var(--error); }
+    .field .hint { margin: 5px 0 0; font-size: 14px; color: var(--error); min-height: 18px; }
+    .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 6px; }
+    .form-msg { margin: 0; font-size: 16px; }
+    .form-msg.ok { color: #14551b; } .form-msg.error { color: var(--error); }
+
+    /* ---------- Footer ---------- */
+    .site-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 24px;
+                   padding: 18px var(--page-pad); background: var(--footer-bg); border-top: 1px solid #d0d0d0; font-size: 15px; }
+    .site-footer p { margin: 0; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) {
+      .header-top { flex-wrap: wrap; justify-content: center; }
+      .user-label { display: none; }
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) { .btn { transition: none; } .spinner { animation-duration: 2.4s; } }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="header-top">
+      <a class="brand" href="dashboard.html">
+        <img data-name="logo" alt="Ministry logo" class="brand-logo">
+        <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
+      </a>
+      <div class="header-right">
+        <span class="user-label"><span id="headerName">Honorary Consul</span><small>Honorary Consul</small></span>
+        <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="User profile">
+          <circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/>
+          <path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/>
+        </svg>
+        <button type="button" class="btn btn-small" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <!-- The menu is built by js/common.js -->
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation"></nav>
+  </header>
+
+  <div class="flag-strip" aria-hidden="true"></div>
+
+  <!-- ============ MY PROFILE ============ -->
+  <main class="page" id="page">
+    <div class="container">
+
+      <p class="demo-banner" id="demoBanner" hidden>
+        Demo mode: this page is showing sample data. To use the real server,
+        set <strong>USE_MOCK</strong> to <strong>false</strong> in <strong>js/api.js</strong>.
+      </p>
+
+      <h1 class="page-title">My Profile</h1>
+      <p class="page-sub">Your official details and contact information.</p>
+
+      <div class="card state-box" id="loadingBox" role="status">
+        <div class="spinner" aria-hidden="true"></div>
+        Loading your profile...
+      </div>
+
+      <div class="card state-box" id="errorBox" hidden role="alert">
+        <p id="errorText" style="margin:0;">Something went wrong.</p>
+        <button type="button" class="btn" id="retryBtn">Try again</button>
+      </div>
+
+      <div id="content" hidden>
+
+        <section class="card" aria-labelledby="officialTitle">
+          <h2 id="officialTitle">Official details</h2>
+          <dl class="details">
+            <div><dt>Full name</dt><dd id="pName">-</dd></div>
+            <div><dt>Title</dt><dd id="pTitle">-</dd></div>
+            <div><dt>Mission</dt><dd id="pMission">-</dd></div>
+            <div><dt>Head of Mission</dt><dd id="pHom">-</dd></div>
+            <div><dt>Cities / jurisdictions</dt><dd><div class="chips" id="pJurisdictions"></div></dd></div>
+            <div><dt>Appointment date</dt><dd id="pAppointed">-</dd></div>
+            <div><dt>Contract ends</dt><dd><span id="pEnds">-</span> <span class="badge grey" id="pEndsBadge" hidden></span></dd></div>
+          </dl>
+          <p class="note">These details are set by the Ministry. Contract dates change through the renewal process.</p>
+        </section>
+
+        <section class="card" aria-labelledby="contactTitle">
+          <h2 id="contactTitle">Contact details</h2>
+          <form id="contactForm" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="email">Official email</label>
+                <input type="email" id="email" autocomplete="email" required>
+                <p class="hint" id="emailHint"></p>
+              </div>
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" autocomplete="tel">
+                <p class="hint" id="phoneHint"></p>
+              </div>
+              <div class="field full">
+                <label for="address">Office address</label>
+                <input type="text" id="address" autocomplete="street-address">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="saveBtn">Save changes</button>
+              <button type="button" class="btn btn-small" id="resetBtn">Reset</button>
+              <p class="form-msg" id="formMsg" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <p>Copyright <span id="year">2026</span> Republic of Kenya</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#">Essential links</a>
+      <a href="contact.html">Contact us</a>
+      <a href="#">Government links</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+
+  <script>
+    var byId = Page.byId;
+    var current = null;     // last saved profile, used by the Reset button
+
+    function showState(which) {
+      byId("loadingBox").hidden = which !== "loading";
+      byId("errorBox").hidden   = which !== "error";
+      byId("content").hidden    = which !== "content";
+    }
+
+    function handleError(err) {
+      if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
+      byId("errorText").textContent = (err && err.code === "NETWORK")
+        ? "Cannot reach the server. Check your connection or the API address in js/api.js."
+        : "We could not load your profile. Please try again.";
+      showState("error");
+      console.error("Profile error:", err);
+    }
+
+    function fillForm(p) {
+      byId("email").value   = p.email || "";
+      byId("phone").value   = p.phone || "";
+      byId("address").value = p.officeAddress || "";
+    }
+
+    function render(p) {
+      current = p;
+      byId("pName").textContent      = p.fullName || "-";
+      byId("pTitle").textContent     = p.title || "-";
+      byId("pMission").textContent   = p.mission || "-";
+      byId("pHom").textContent       = p.headOfMission || "-";
+      byId("pAppointed").textContent = Page.formatDate(p.appointmentDate);
+      byId("pEnds").textContent      = Page.formatDate(p.contractEndDate);
+
+      // Cities / jurisdictions as little tags (textContent keeps it safe)
+      var chips = byId("pJurisdictions");
+      chips.textContent = "";
+      (p.jurisdictions || []).forEach(function (city) {
+        var chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = city;
+        chips.appendChild(chip);
+      });
+
+      // Days-left badge next to the contract end date
+      var days = Page.daysUntil(p.contractEndDate);
+      var badge = byId("pEndsBadge");
+      if (days !== null) {
+        badge.hidden = false;
+        badge.className = "badge " + Page.levelFor(days);
+        badge.textContent = days < 0 ? "Expired" : Page.plural(days, "day") + " left";
+      } else {
+        badge.hidden = true;
+      }
+
+      fillForm(p);
+      showState("content");
+    }
+
+    function load() {
+      showState("loading");
+      Api.getProfile().then(render).catch(handleError);
+    }
+
+    /* ---------- contact form ---------- */
+    function message(text, type) {
+      var el = byId("formMsg");
+      el.textContent = text;
+      el.className = "form-msg " + (type || "");
+    }
+
+    function setInvalid(input, hintId, text) {
+      if (text) input.setAttribute("aria-invalid", "true"); else input.removeAttribute("aria-invalid");
+      byId(hintId).textContent = text || "";
+    }
+
+    byId("contactForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var email = byId("email").value.trim();
+      var phone = byId("phone").value.trim();
+      var address = byId("address").value.trim();
+      var ok = true;
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setInvalid(byId("email"), "emailHint", "Enter a valid email address.");
+        ok = false;
+      } else { setInvalid(byId("email"), "emailHint", ""); }
+
+      if (phone && !/^[0-9 +()\-]{6,25}$/.test(phone)) {
+        setInvalid(byId("phone"), "phoneHint", "Use digits, spaces, + ( ) or - only.");
+        ok = false;
+      } else { setInvalid(byId("phone"), "phoneHint", ""); }
+
+      if (!ok) { message("Please fix the highlighted fields.", "error"); return; }
+
+      var btn = byId("saveBtn");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+      message("", "");
+
+      Api.updateProfile({ email: email, phone: phone, officeAddress: address })
+        .then(function (saved) {
+          current = saved;
+          message("Saved.", "ok");
+        })
+        .catch(function (err) {
+          if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
+          message("Could not save your changes. Please try again.", "error");
+          console.error("Save error:", err);
+        })
+        .then(function () {          // runs after success or failure
+          btn.disabled = false;
+          btn.textContent = "Save changes";
+        });
+    });
+
+    byId("resetBtn").addEventListener("click", function () {
+      if (current) fillForm(current);
+      setInvalid(byId("email"), "emailHint", "");
+      setInvalid(byId("phone"), "phoneHint", "");
+      message("", "");
+    });
+
+    byId("retryBtn").addEventListener("click", load);
+
+    if (Page.init("profile")) load();
+  </script>
+</body>
+</html>

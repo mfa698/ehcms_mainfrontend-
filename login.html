@@ -322,6 +322,9 @@
     </div>
   </footer>
 
+  <!-- All backend talking happens in this one file -->
+  <script src="js/api.js"></script>
+
   <script>
     /* ==========================================================
        1) FORM BEHAVIOUR
@@ -359,33 +362,33 @@
         return;
       }
 
-      /* ------------------------------------------------------
-         TODO: CONNECT THE REAL LOGIN API HERE
-         When the second group gives you the login endpoint,
-         replace the line below with something like:
+      // Send the details to the API (see js/api.js).
+      // In demo mode this works without a server.
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+      showMessage("", "info");
 
-         btn.disabled = true;
-         btn.textContent = "Logging in...";
-         fetch("https://THEIR-API-URL/login", {
-           method: "POST",
-           headers: { "Content-Type": "application/json" },
-           body: JSON.stringify({ username: username, password: password })
-         })
-           .then(function (res) {
-             if (!res.ok) throw new Error("Wrong details");
-             return res.json();
-           })
-           .then(function (data) {
-             // save the token if they send one, then go to the dashboard
-             window.location.href = "dashboard.html";
-           })
-           .catch(function () {
-             showMessage("Login failed. Check your details and try again.", "error");
-             btn.disabled = false;
-             btn.textContent = "Log in";
-           });
-         ------------------------------------------------------ */
-      showMessage("Details look good. Login will work once the API is connected.", "info");
+      Api.login(username, password)
+        .then(function (session) {
+          if (session.user && session.user.role === "honorary_consul") {
+            window.location.href = "dashboard.html";
+          } else {
+            // Other roles (Head of Mission, HQ) have no portal built yet
+            Api.logout();
+            showMessage("This account's portal is not available yet.", "error");
+            btn.disabled = false;
+            btn.textContent = "Log in";
+          }
+        })
+        .catch(function (err) {
+          var text = "Login failed. Please try again.";
+          if (err && err.code === "AUTH")    text = "Wrong username or password.";
+          if (err && err.code === "NETWORK") text = "Cannot reach the server. Check the API address in js/api.js.";
+          showMessage(text, "error");
+          btn.disabled = false;
+          btn.textContent = "Log in";
+          console.error("Login error:", err);
+        });
     });
 
     /* ==========================================================
