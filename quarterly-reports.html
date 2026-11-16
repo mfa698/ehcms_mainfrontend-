@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Quarterly Reports | e-HCMS Honorary Consul</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --green: #2f9e2f; --green-dark: #247a24; --text: #111111; --header-bg: #e3e3e3; --hero-bg: #ececec; --footer-bg: #ebebeb; --border: #555555; --nav-active: #c8c8c8; --error: #b3261e; --hero-overlay: 0.82; --page-pad: clamp(16px, 4vw, 56px); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; display: flex; flex-direction: column; min-height: 100vh; font-family: "Roboto Condensed", Arial, sans-serif; color: var(--text); background: var(--hero-bg); }
+    a { color: inherit; text-decoration: none; }
+    [hidden] { display: none !important; }
+    .site-header { background: var(--header-bg); padding: 22px var(--page-pad) 0; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand-logo { width: 40px; height: 40px; object-fit: contain; }
+    .brand-name { font-size: 17px; line-height: 1.15; text-align: center; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .user-label { font-size: 17px; line-height: 1.15; text-align: right; }
+    .user-label small { display: block; font-size: 14px; color: #555; }
+    .avatar { width: 52px; height: 52px; }
+    .btn { display: inline-block; font-family: "Roboto", Arial, sans-serif; color: var(--text); background: #f2f2f2; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; padding: 10px 18px; font-size: 15px; }
+    .btn-small { padding: 11px 18px; font-size: 15px; text-transform: uppercase; background: #ededed; border-color: #9a9a9a; }
+    .btn-primary { padding: 12px 24px; font-size: 16px; font-weight: 500; color: #fff; background: var(--green); border-color: var(--green); }
+    .btn-primary:hover { background: var(--green-dark); }
+    .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 18px 0 16px; font-family: "Roboto", Arial, sans-serif; font-size: 16px; }
+    .main-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px; }
+    .main-nav a:hover { background: #d4d4d4; }
+    .main-nav a.active { background: var(--nav-active); }
+    .nav-badge { min-width: 20px; padding: 1px 6px; font-size: 12px; font-weight: 700; text-align: center; color: #fff; background: #b3261e; border-radius: 10px; }
+    .flag-strip { height: 8px; background: linear-gradient(to bottom, #000 0,#000 2px, #fff 2px, #fff 3px, #bb0000 3px, #bb0000 5px, #fff 5px, #fff 6px, #006600 6px, #006600 8px); }
+    .page { position: relative; flex: 1; padding: 36px var(--page-pad) 48px; isolation: isolate; }
+    .page::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,var(--hero-overlay)); z-index: -1; }
+    .container { max-width: 980px; margin: 0 auto; }
+    .page-title { margin: 0 0 4px; font-family: "Roboto", Arial, sans-serif; font-weight: 900; font-size: clamp(28px, 4vw, 38px); color: var(--green); }
+    .page-sub { margin: 0 0 22px; font-size: 18px; color: #333; }
+    .card { padding: 22px 24px; margin-bottom: 20px; background: rgba(255,255,255,0.85); border: 1px solid #fff; border-radius: 16px; box-shadow: 0 14px 40px rgba(0,0,0,0.1); }
+    .card h2 { margin: 0 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; color: #555; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 20px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 5px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; font-weight: 500; }
+    .field input, .field select, .field textarea { width: 100%; padding: 10px 14px; font-family: "Roboto", Arial, sans-serif; font-size: 15px; background: #fff; border: 1px solid #b9b9b9; border-radius: 8px; }
+    .field textarea { min-height: 75px; resize: vertical; }
+    .check-list { display: flex; flex-direction: column; gap: 8px; max-height: 160px; overflow-y: auto; padding: 10px; background: #fff; border: 1px solid #ccc; border-radius: 8px; }
+    .check-item { display: flex; align-items: center; gap: 10px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; }
+    .badge { display: inline-block; padding: 4px 10px; font-family: "Roboto", Arial, sans-serif; font-size: 12px; font-weight: 700; border-radius: 999px; }
+    .badge.ok { color: #14551b; background: #d9f2dc; }
+    .badge.warn { color: #6b4a00; background: #fff0c2; }
+    .badge.danger { color: #7a1a14; background: #fde0dd; }
+    .receipt-box { padding: 14px 18px; background: #d9f2dc; border: 1px solid #9fd4a5; border-radius: 10px; color: #14551b; font-family: "Roboto", Arial, sans-serif; margin-bottom: 16px; }
+    .report-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; background: #fff; border: 1px solid #dcdcdc; border-radius: 10px; margin-bottom: 10px; }
+    .form-msg { margin: 10px 0 0; font-size: 15px; font-family: "Roboto", Arial, sans-serif; }
+    .form-msg.ok { color: #14551b; } .form-msg.error { color: var(--error); }
+    .site-footer { display: flex; justify-content: space-between; padding: 18px var(--page-pad); background: var(--footer-bg); border-top: 1px solid #d0d0d0; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-top">
+      <a class="brand" href="dashboard.html">
+        <img data-name="logo" alt="Ministry logo" class="brand-logo">
+        <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
+      </a>
+      <div class="header-right">
+        <span class="user-label"><span id="headerName">Honorary Consul</span><small>Honorary Consul</small></span>
+        <svg class="avatar" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/><path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/></svg>
+        <button type="button" class="btn btn-small" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <nav class="main-nav" id="mainNav"></nav>
+  </header>
+  <div class="flag-strip"></div>
+
+  <main class="page" id="page">
+    <div class="container">
+      <h1 class="page-title">Quarterly Reports</h1>
+      <p class="page-sub">Compile your quarterly diplomatic narrative, attach evidence, and generate an official submission receipt.</p>
+      <div class="receipt-box" id="receiptBanner" hidden></div>
+
+      <section class="card">
+        <h2>Prepare / Submit Quarterly Report</h2>
+        <form id="reportForm">
+          <div class="form-grid">
+            <div class="field"><label for="rYear">Reporting Year *</label><input type="number" id="rYear" value="2026" min="2024" max="2035" required></div>
+            <div class="field">
+              <label for="rQuarter">Quarter *</label>
+              <select id="rQuarter" required>
+                <option value="1">Q1 (Jan – Mar)</option><option value="2">Q2 (Apr – Jun)</option>
+                <option value="3">Q3 (Jul – Sep)</option><option value="4" selected>Q4 (Oct – Dec)</option>
+              </select>
+            </div>
+            <div class="field full"><label for="execSummary">Executive Summary *</label><textarea id="execSummary" required></textarea></div>
+            <div class="field"><label for="tradeSection">Trade & Investment Promotion</label><textarea id="tradeSection"></textarea></div>
+            <div class="field"><label for="diasporaSection">Diaspora & Consular Welfare</label><textarea id="diasporaSection"></textarea></div>
+            <div class="field full"><label>Attach Draft Work Log Entries (Locks upon submission)</label><div class="check-list" id="draftLogsBox">Loading...</div></div>
+            <div class="field full"><label for="evidenceFile">Supporting Evidence Attachment (PDF, DOCX, XLSX, JPG, PNG)</label><input type="file" id="evidenceFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:16px;">
+            <button type="button" class="btn" id="saveDraftBtn">Save Draft</button>
+            <button type="submit" class="btn btn-primary" id="submitReportBtn">Submit Report & Generate Receipt</button>
+          </div>
+          <p class="form-msg" id="reportMsg"></p>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Submission History</h2>
+        <div id="reportsHistory">Loading reports...</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>Copyright <span id="year">2026</span> Republic of Kenya</p>
+    <div><a href="contact.html">Contact us</a></div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    var byId = Page.byId, activeDraftId = null;
+    function getSelectedLogIds() { var ids = []; document.querySelectorAll("input[name='linkedLog']:checked").forEach(function (cb) { ids.push(cb.value); }); return ids; }
+    function buildPayload() { return { year: parseInt(byId("rYear").value, 10), quarter: parseInt(byId("rQuarter").value, 10), executive_summary: byId("execSummary").value.trim(), trade_and_investment: byId("tradeSection").value.trim(), diaspora_and_consular_services: byId("diasporaSection").value.trim(), linked_work_logs: getSelectedLogIds() }; }
+    function loadPageData() {
+      Promise.all([Api.getWorkLogs(), Api.getReports()]).then(function (res) {
+        var logs = res || [], reports = res || [];
+        var drafts = logs.filter(function (l) { return !l.is_locked; });
+        var box = byId("draftLogsBox"); box.textContent = "";
+        if (!drafts.length) { box.textContent = "No unlocked draft work logs available."; }
+        else { drafts.forEach(function (l) { var lbl = document.createElement("label"); lbl.className = "check-item"; var cb = document.createElement("input"); cb.type = "checkbox"; cb.name = "linkedLog"; cb.value = l.id; cb.checked = true; lbl.appendChild(cb); lbl.appendChild(document.createTextNode(Page.formatDate(l.activity_date) + " — " + l.title)); box.appendChild(lbl); }); }
+        var draft = reports.find(function (r) { return r.status === "draft" || r.status === "revision_requested"; });
+        if (draft) { activeDraftId = draft.id; byId("rYear").value = draft.year; byId("rQuarter").value = draft.quarter; byId("execSummary").value = draft.executive_summary || ""; byId("tradeSection").value = draft.trade_and_investment || ""; byId("diasporaSection").value = draft.diaspora_and_consular_services || ""; }
+        else { activeDraftId = null; }
+        var hist = byId("reportsHistory"); hist.textContent = "";
+        if (!reports.length) { hist.textContent = "No quarterly reports created yet."; }
+        else { reports.forEach(function (r) { var row = document.createElement("div"); row.className = "report-row"; var left = document.createElement("div"); left.innerHTML = "<strong>Q" + r.quarter + " " + r.year + "</strong>" + (r.receipt_number ? " — Receipt: <code>" + r.receipt_number + "</code>" : ""); var badge = document.createElement("span"); badge.className = "badge " + (r.status === "endorsed" || r.status === "submitted" ? "ok" : (r.status === "revision_requested" ? "danger" : "warn")); badge.textContent = r.status.replace("_", " ").toUpperCase(); row.appendChild(left); row.appendChild(badge); hist.appendChild(row); }); }
+      });
+    }
+    function saveDraftAndAttachment() {
+      var fileInput = byId("evidenceFile"), file = fileInput.files && fileInput.files;
+      return Api.saveReportDraft(activeDraftId, buildPayload()).then(function (saved) { activeDraftId = saved.id; if (file) { return Api.uploadReportAttachment(saved.id, file).then(function () { fileInput.value = ""; return saved; }); } return saved; });
+    }
+    byId("saveDraftBtn").addEventListener("click", function () {
+      var btn = byId("saveDraftBtn"), msg = byId("reportMsg"); btn.disabled = true; msg.textContent = "";
+      saveDraftAndAttachment().then(function () { msg.className = "form-msg ok"; msg.textContent = "Draft saved."; loadPageData(); }).catch(function (e) { msg.className = "form-msg error"; msg.textContent = e.message; }).then(function () { btn.disabled = false; });
+    });
+    byId("reportForm").addEventListener("submit", function (e) {
+      e.preventDefault(); var btn = byId("submitReportBtn"), msg = byId("reportMsg"); btn.disabled = true; msg.textContent = "";
+      saveDraftAndAttachment().then(function (saved) { return Api.submitReport(saved.id); }).then(function (sub) { var b = byId("receiptBanner"); b.hidden = false; b.innerHTML = "<strong>Report Submitted!</strong> Receipt Number: <code>" + sub.receipt_number + "</code>"; msg.className = "form-msg ok"; msg.textContent = "Submitted and locked."; loadPageData(); }).catch(function (e) { msg.className = "form-msg error"; msg.textContent = e.message; }).then(function () { btn.disabled = false; });
+    });
+    if (Page.init("reports")) loadPageData();
+  </script>
+</body>
+</html>

@@ -1,11 +1,11 @@
-/* ==========================================================
+﻿/* ==========================================================
    e-HCMS COMMON PAGE CODE (Honorary Consul pages)
    Every Consul page calls  Page.init("something")  once.
    It takes care of: login check, menu, user name, log out,
    notification badge, footer year, logo and background image.
 
    TO ADD A NEW PAGE TO THE MENU later, edit NAV_ITEMS below:
-   change  built: false  to  built: true  when the page exists.
+   change  built: true   to  built: true  when the page exists.
    ========================================================== */
 var Page = (function () {
 
@@ -14,8 +14,8 @@ var Page = (function () {
   var NAV_ITEMS = [
     { key: "dashboard",     label: "Dashboard",         href: "dashboard.html",         built: true  },
     { key: "profile",       label: "My Profile",        href: "my-profile.html",        built: true  },
-    { key: "worklog",       label: "Work Log",          href: "work-log.html",          built: false },
-    { key: "reports",       label: "Quarterly Reports", href: "quarterly-reports.html", built: false },
+    { key: "worklog",       label: "Work Log",          href: "work-log.html",          built: true  },
+    { key: "reports",       label: "Quarterly Reports", href: "quarterly-reports.html", built: true  },
     { key: "notifications", label: "Notifications",     href: "notifications.html",     built: true, badge: true }
   ];
 
