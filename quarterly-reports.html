@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quarterly Reports | e-HCMS Honorary Consul</title>
+  <title>Reports | e-HCMS Head of Mission</title>
 
   <!-- Fonts (needs internet while developing) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,42 +103,29 @@
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .chip { padding: 4px 12px; font-size: 15px; background: #e6f1e7; border-radius: 999px; overflow-wrap: anywhere; }
-    /* ---------- Quarterly reports ---------- */
-    .container { max-width: 940px; }
-    .report-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 18px; }
-    .report-head h3 { margin: 0; font-family: "Roboto", Arial, sans-serif; font-size: 24px; font-weight: 900; }
-    .report-head p { margin: 4px 0 0; font-size: 17px; color: #444444; }
-    .steps { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0 0 22px; padding: 0; font-family: "Roboto", Arial, sans-serif; }
-    .steps li { display: flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; font-size: 14px; color: #555555;
-                background: rgba(255,255,255,0.7); border: 1px solid #cfcfcf; border-radius: 999px; }
-    .steps li span { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; font-size: 13px; font-weight: 700;
-                     color: #444444; background: #e0e0e0; border-radius: 50%; }
-    .steps li.current { color: var(--text); border-color: var(--green); background: #ffffff; }
-    .steps li.current span { color: #ffffff; background: var(--green); }
-    .steps li.done span { color: #ffffff; background: #7aa97a; }
-    .step-title { margin: 0 0 6px; font-family: "Roboto", Arial, sans-serif; font-size: 20px; font-weight: 700; }
-    .step-help { margin: 0 0 14px; font-size: 16px; color: #555555; }
-    .nav-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
-    .nav-buttons .spacer { flex: 1; }
-    .save-status { margin: 12px 0 0; font-size: 14px; color: #555555; min-height: 20px; }
-    .save-status.error { color: var(--error); }
+    /* ---------- HoM reports ---------- */
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tab { padding: 9px 18px; font-family: "Roboto", Arial, sans-serif; font-size: 15px; color: var(--text);
+           background: rgba(255,255,255,0.8); border: 1px solid #b9b9b9; border-radius: 999px; cursor: pointer; }
+    .tab[aria-pressed="true"] { color: #ffffff; background: var(--green); border-color: var(--green); }
+    details.rep { margin-bottom: 12px; padding: 16px 20px; background: rgba(255,255,255,0.85); border: 1px solid #dcdcdc;
+                  border-left: 6px solid #d0d0d0; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    details.rep.pending { border-left-color: #e0a100; } details.rep.done { border-left-color: var(--green); }
+    details.rep summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; cursor: pointer; }
+    .r-name { margin: 0; font-size: 19px; font-weight: 700; }
+    .r-sub { margin: 2px 0 0; font-size: 14px; color: #666666; }
+    .review { margin-top: 16px; }
     .review dl { margin: 0; display: grid; gap: 14px; }
     .review dt { font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #666666; }
     .review dd { margin: 4px 0 0; font-size: 17px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
-    .confirm { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; font-size: 17px; }
-    .confirm input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--green); }
-    .receipt { border-left: 6px solid var(--green); }
-    .receipt h2 { color: #14551b; }
-    .receipt dl { margin: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 24px; }
-    .receipt dt { font-family: "Roboto", Arial, sans-serif; font-size: 13px; color: #666666; }
-    .receipt dd { margin: 2px 0 0; font-size: 19px; font-weight: 700; overflow-wrap: anywhere; }
-    details.past { margin-bottom: 10px; padding: 14px 18px; background: rgba(255,255,255,0.85); border: 1px solid #dcdcdc; border-radius: 12px; }
-    details.past summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; cursor: pointer; font-size: 18px; font-weight: 700; }
-    details.past summary small { font-size: 15px; font-weight: 400; color: #555555; }
-    details.past .review { margin-top: 14px; }
+    .review-box { margin-top: 18px; padding-top: 16px; border-top: 1px solid #e0e0e0; }
+    .review-box .field textarea { min-height: 90px; }
+    .review-box .form-actions { margin-top: 12px; }
+    .done-note { margin: 18px 0 0; padding: 12px 16px; font-size: 16px; background: #eaf5eb; border-radius: 10px; overflow-wrap: anywhere; }
     .error-line { margin: 0 0 12px; padding: 10px 16px; font-family: "Roboto", Arial, sans-serif; font-size: 14px;
                   color: #7a1a14; background: #fde7e5; border: 1px solid #f2b8b4; border-radius: 10px; }
-    .empty { margin: 0; font-size: 17px; color: #555555; }
+    .empty { margin: 0; text-align: center; font-size: 18px; color: #555555; }
+    .container { max-width: 960px; }
 
     /* ---------- Footer ---------- */
     .site-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 24px;
@@ -161,12 +148,12 @@
   <!-- ============ HEADER ============ -->
   <header class="site-header">
     <div class="header-top">
-      <a class="brand" href="dashboard.html">
+      <a class="brand" id="brandLink" href="dashboard.html">
         <img data-name="logo" alt="Ministry logo" class="brand-logo">
         <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
       </a>
       <div class="header-right">
-        <span class="user-label"><span id="headerName">Honorary Consul</span><small>Honorary Consul</small></span>
+        <span class="user-label"><span id="headerName">Honorary Consul</span><small id="headerRole">Honorary Consul</small></span>
         <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="User profile">
           <circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/>
           <path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/>
@@ -180,7 +167,7 @@
 
   <div class="flag-strip" aria-hidden="true"></div>
 
-  <!-- ============ QUARTERLY REPORTS ============ -->
+  <!-- ============ HOM REPORTS ============ -->
   <main class="page" id="page">
     <div class="container">
 
@@ -189,12 +176,12 @@
         set <strong>USE_MOCK</strong> to <strong>false</strong> in <strong>js/api.js</strong>.
       </p>
 
-      <h1 class="page-title">Quarterly Reports</h1>
-      <p class="page-sub">Prepare your report step by step. Your draft is saved automatically.</p>
+      <h1 class="page-title">Reports</h1>
+      <p class="page-sub">Quarterly reports submitted by your consuls. Read each one, then mark it as reviewed.</p>
 
       <div class="card state-box" id="loadingBox" role="status">
         <div class="spinner" aria-hidden="true"></div>
-        Loading your reports...
+        Loading reports...
       </div>
 
       <div class="card state-box" id="errorBox" hidden role="alert">
@@ -203,103 +190,14 @@
       </div>
 
       <div id="content" hidden>
-
-        <!-- Receipt after a successful submission -->
-        <section class="card receipt" id="receipt" hidden aria-labelledby="receiptTitle">
-          <h2 id="receiptTitle">Report submitted</h2>
-          <dl>
-            <div><dt>Quarter</dt><dd id="rcQuarter">-</dd></div>
-            <div><dt>Reference number</dt><dd id="rcRef">-</dd></div>
-            <div><dt>Submitted on</dt><dd id="rcDate">-</dd></div>
-          </dl>
-          <p class="empty">Keep this reference number for your records. A receipt was also added to your notifications.</p>
-        </section>
-
-        <!-- Current report (guided form) -->
-        <section class="card" id="currentCard" aria-labelledby="currentTitle">
-          <h2 id="currentTitle">Current report</h2>
-
-          <div class="report-head">
-            <div>
-              <h3 id="curQuarter">-</h3>
-              <p id="curDue"></p>
-            </div>
-            <span class="badge grey" id="curBadge">-</span>
-          </div>
-
-          <ol class="steps" id="steps" aria-label="Report steps">
-            <li data-step="1"><span>1</span>Activities</li>
-            <li data-step="2"><span>2</span>Results</li>
-            <li data-step="3"><span>3</span>Plans and files</li>
-            <li data-step="4"><span>4</span>Review and submit</li>
-          </ol>
-
-          <p class="error-line" id="formError" hidden role="alert"></p>
-
-          <form id="reportForm" novalidate>
-
-            <div class="step" data-step="1">
-              <h3 class="step-title">Summary of activities</h3>
-              <p class="step-help">What did you do this quarter? Your work log entries can help you remember.</p>
-              <div class="field">
-                <label class="sr-only" for="summary">Summary of activities</label>
-                <textarea id="summary" maxlength="3000"></textarea>
-                <p class="hint" id="summaryHint"></p>
-              </div>
-            </div>
-
-            <div class="step" data-step="2" hidden>
-              <h3 class="step-title">Achievements and challenges</h3>
-              <div class="field">
-                <label for="achievements">Achievements</label>
-                <textarea id="achievements" maxlength="3000"></textarea>
-              </div>
-              <div class="field" style="margin-top:16px;">
-                <label for="challenges">Challenges</label>
-                <textarea id="challenges" maxlength="3000"></textarea>
-              </div>
-            </div>
-
-            <div class="step" data-step="3" hidden>
-              <h3 class="step-title">Plans and attachments</h3>
-              <div class="field">
-                <label for="plans">Plans for next quarter</label>
-                <textarea id="plans" maxlength="3000"></textarea>
-              </div>
-              <div class="field" style="margin-top:16px;">
-                <label for="files">Attachments (optional)</label>
-                <input type="file" id="files" multiple accept=".pdf,.png,.jpg,.jpeg,.docx">
-                <p class="help">PDF, PNG, JPG or DOCX. Up to 5 files, 5 MB each. Files are sent when you submit.</p>
-                <p class="hint" id="filesHint"></p>
-                <div class="chips" id="fileChips"></div>
-              </div>
-            </div>
-
-            <div class="step" data-step="4" hidden>
-              <h3 class="step-title">Review and submit</h3>
-              <p class="step-help">Check everything below. After you submit, this report is locked.</p>
-              <div class="review"><dl id="reviewList"></dl></div>
-              <label class="confirm"><input type="checkbox" id="confirm"> I confirm the information in this report is correct.</label>
-              <p class="hint" id="confirmHint"></p>
-            </div>
-
-            <div class="nav-buttons">
-              <button type="button" class="btn btn-small" id="backBtn">Back</button>
-              <span class="spacer"></span>
-              <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
-              <button type="submit" class="btn btn-primary" id="submitBtn" hidden>Submit report</button>
-            </div>
-            <p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
-          </form>
-        </section>
-
-        <!-- Past reports -->
-        <section class="card" aria-labelledby="pastTitle">
-          <h2 id="pastTitle">Past reports</h2>
-          <div id="pastList"></div>
-          <p class="empty" id="pastEmpty" hidden>No submitted reports yet.</p>
-        </section>
-
+        <div class="tabs" role="group" aria-label="Filter reports">
+          <button type="button" class="tab" id="tabPending" aria-pressed="true">To review</button>
+          <button type="button" class="tab" id="tabReviewed" aria-pressed="false">Reviewed</button>
+          <button type="button" class="tab" id="tabAll" aria-pressed="false">All</button>
+        </div>
+        <p class="error-line" id="actionError" hidden role="alert"></p>
+        <div id="list"></div>
+        <div class="card" id="emptyBox" hidden><p class="empty" id="emptyText">No reports.</p></div>
       </div>
     </div>
   </main>
@@ -318,16 +216,11 @@
   <script src="js/api.js"></script>
   <script src="js/common.js"></script>
 
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+
   <script>
     var byId = Page.byId;
-    var current = null;         // the open report (not submitted yet)
-    var step = 1;
-    var dirty = false;          // true when there are changes not yet saved
-    var saveTimer = null;
-    var saving = false;
-    var receipt = null;         // shown after a successful submission
-
-    var FIELDS = ["summary", "achievements", "challenges", "plans"];
 
     function showState(which) {
       byId("loadingBox").hidden = which !== "loading";
@@ -335,286 +228,159 @@
       byId("content").hidden    = which !== "content";
     }
 
-    function handleError(err) {
+    function handleError(err, what) {
       if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
       byId("errorText").textContent = (err && err.code === "NETWORK")
         ? "Cannot reach the server. Check your connection or the API address in js/api.js."
-        : "We could not load your reports. Please try again.";
+        : "We could not load " + what + ". Please try again.";
       showState("error");
-      console.error("Reports error:", err);
+      console.error("Load error:", err);
     }
 
-    function showFormError(text) {
-      var el = byId("formError");
+    var reports = [];
+    var filter = "pending";        // "pending", "reviewed" or "all"
+    var openId = null;             // keeps the report you were reading open after a refresh
+
+    function showActionError(text) {
+      var el = byId("actionError");
       el.textContent = text || "";
       el.hidden = !text;
     }
 
-    function getContent() {
-      var content = {};
-      FIELDS.forEach(function (f) { content[f] = byId(f).value.trim(); });
-      return content;
+    function addRow(dl, label, value) {
+      var dt = document.createElement("dt"); dt.textContent = label;
+      var dd = document.createElement("dd"); dd.textContent = value || "Not provided";
+      dl.appendChild(dt); dl.appendChild(dd);
     }
 
-    /* ---------- autosave ---------- */
-    function setSaveStatus(text, isError) {
-      var el = byId("saveStatus");
-      el.textContent = text;
-      el.className = "save-status" + (isError ? " error" : "");
-    }
+    function render() {
+      var pending  = reports.filter(function (r) { return r.status === "pending_review"; }).length;
+      var reviewed = reports.length - pending;
+      byId("tabPending").textContent  = "To review (" + pending + ")";
+      byId("tabReviewed").textContent = "Reviewed (" + reviewed + ")";
+      byId("tabAll").textContent      = "All (" + reports.length + ")";
+      byId("tabPending").setAttribute("aria-pressed", String(filter === "pending"));
+      byId("tabReviewed").setAttribute("aria-pressed", String(filter === "reviewed"));
+      byId("tabAll").setAttribute("aria-pressed", String(filter === "all"));
 
-    function scheduleSave() {
-      dirty = true;
-      setSaveStatus("Unsaved changes...", false);
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(saveDraft, 1500);
-    }
-
-    function saveDraft() {
-      clearTimeout(saveTimer);
-      if (!dirty || saving || !current) return Promise.resolve();
-
-      var content = getContent();
-      var allEmpty = FIELDS.every(function (f) { return content[f] === ""; });
-      if (allEmpty) { dirty = false; setSaveStatus("", false); return Promise.resolve(); }
-
-      saving = true;
-      dirty = false;
-      setSaveStatus("Saving draft...", false);
-
-      return Api.saveReportDraft(current.id, content)
-        .then(function () {
-          var time = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-          setSaveStatus("Draft saved at " + time, false);
-          current.status = "draft";
-          drawCurrentHeader();
-        })
-        .catch(function (err) {
-          dirty = true;
-          if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
-          setSaveStatus(err && err.code === "LOCKED"
-            ? "This report is already submitted, so it cannot be changed."
-            : "Could not save your draft. Check your connection.", true);
-        })
-        .then(function () { saving = false; });
-    }
-
-    FIELDS.forEach(function (f) { byId(f).addEventListener("input", scheduleSave); });
-
-    /* ---------- header of the current report ---------- */
-    function drawCurrentHeader() {
-      byId("curQuarter").textContent = current.quarter + " report";
-
-      var days = Page.daysUntil(current.dueDate);
-      var due = "Due " + Page.formatDate(current.dueDate);
-      if (days !== null) due += days >= 0 ? " (in " + Page.plural(days, "day") + ")" : " (overdue)";
-      byId("curDue").textContent = due;
-
-      var badge = byId("curBadge");
-      var map = { not_started: ["Not started", "grey"], draft: ["Draft saved", "warn"] };
-      var info = map[current.status] || ["Open", "grey"];
-      if (days !== null && days < 0) info = ["Overdue", "danger"];
-      badge.textContent = info[0];
-      badge.className = "badge " + info[1];
-    }
-
-    /* ---------- steps ---------- */
-    function showStep(n) {
-      step = n;
-      Array.prototype.forEach.call(document.querySelectorAll(".step"), function (el) {
-        el.hidden = Number(el.getAttribute("data-step")) !== n;
+      var shown = reports.filter(function (r) {
+        if (filter === "pending")  return r.status === "pending_review";
+        if (filter === "reviewed") return r.status === "reviewed";
+        return true;
       });
-      Array.prototype.forEach.call(document.querySelectorAll("#steps li"), function (li) {
-        var num = Number(li.getAttribute("data-step"));
-        li.className = num === n ? "current" : (num < n ? "done" : "");
-        if (num === n) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
-      });
-      byId("backBtn").hidden   = n === 1;
-      byId("nextBtn").hidden   = n === 4;
-      byId("submitBtn").hidden = n !== 4;
-      if (n === 4) drawReview();
-    }
 
-    function addReviewRow(list, label, value) {
-      var dt = document.createElement("dt");
-      dt.textContent = label;
-      var dd = document.createElement("dd");
-      dd.textContent = value || "Not provided";
-      list.appendChild(dt);
-      list.appendChild(dd);
-    }
-
-    function drawReview() {
-      var list = byId("reviewList");
+      var list = byId("list");
       list.textContent = "";
-      var c = getContent();
-      addReviewRow(list, "Summary of activities", c.summary);
-      addReviewRow(list, "Achievements", c.achievements);
-      addReviewRow(list, "Challenges", c.challenges);
-      addReviewRow(list, "Plans for next quarter", c.plans);
-      var names = Array.prototype.map.call(byId("files").files, function (f) { return f.name; });
-      addReviewRow(list, "Attachments", names.join(", "));
-    }
 
-    function summaryOk() {
-      var ok = byId("summary").value.trim().length >= 20;
-      var input = byId("summary");
-      if (ok) input.removeAttribute("aria-invalid"); else input.setAttribute("aria-invalid", "true");
-      byId("summaryHint").textContent = ok ? "" : "Write at least a couple of sentences (20 characters or more).";
-      return ok;
-    }
+      shown.forEach(function (r) {
+        var isPending = r.status === "pending_review";
 
-    byId("nextBtn").addEventListener("click", function () {
-      showFormError("");
-      if (step === 1 && !summaryOk()) return;
-      saveDraft();
-      showStep(step + 1);
-    });
-
-    byId("backBtn").addEventListener("click", function () {
-      showFormError("");
-      saveDraft();
-      showStep(step - 1);
-    });
-
-    /* ---------- attachments ---------- */
-    byId("files").addEventListener("change", function () {
-      var chips = byId("fileChips");
-      chips.textContent = "";
-      var error = Page.checkFiles(byId("files").files);
-      byId("filesHint").textContent = error;
-      if (error) { byId("files").value = ""; return; }
-      Array.prototype.forEach.call(byId("files").files, function (file) {
-        var chip = document.createElement("span");
-        chip.className = "chip";
-        chip.textContent = file.name;
-        chips.appendChild(chip);
-      });
-    });
-
-    /* ---------- submit ---------- */
-    byId("reportForm").addEventListener("submit", function (event) {
-      event.preventDefault();
-      showFormError("");
-
-      if (!summaryOk()) { showStep(1); return; }
-      if (!byId("confirm").checked) {
-        byId("confirmHint").textContent = "Tick the box to confirm before submitting.";
-        return;
-      }
-      byId("confirmHint").textContent = "";
-
-      var btn = byId("submitBtn");
-      btn.disabled = true;
-      btn.textContent = "Submitting...";
-      clearTimeout(saveTimer);
-
-      var files = Array.prototype.slice.call(byId("files").files);
-
-      Api.submitReport(current.id, getContent(), files)
-        .then(function (report) {
-          receipt = report;
-          dirty = false;
-          load();
-        })
-        .catch(function (err) {
-          btn.disabled = false;
-          btn.textContent = "Submit report";
-          if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
-          showFormError(err && err.code === "LOCKED"
-            ? "This report was already submitted."
-            : "Could not submit the report. Your draft is safe. Please try again.");
-          console.error("Submit error:", err);
-        });
-    });
-
-    /* ---------- drawing the page ---------- */
-    function fillForm(report) {
-      FIELDS.forEach(function (f) { byId(f).value = (report.content && report.content[f]) || ""; });
-      byId("files").value = "";
-      byId("fileChips").textContent = "";
-      byId("confirm").checked = false;
-      byId("confirmHint").textContent = "";
-      byId("summaryHint").textContent = "";
-      byId("summary").removeAttribute("aria-invalid");
-      setSaveStatus(report.status === "draft" ? "Draft loaded." : "", false);
-      byId("submitBtn").disabled = false;
-      byId("submitBtn").textContent = "Submit report";
-    }
-
-    function drawPast(reports) {
-      var wrap = byId("pastList");
-      wrap.textContent = "";
-      var past = reports.filter(function (r) { return r.status === "submitted"; });
-      byId("pastEmpty").hidden = past.length > 0;
-
-      past.forEach(function (r) {
         var d = document.createElement("details");
-        d.className = "past";
+        d.className = "rep " + (isPending ? "pending" : "done");
+        if (r.id === openId) d.open = true;
+        d.addEventListener("toggle", function () { if (d.open) openId = r.id; });
 
         var s = document.createElement("summary");
-        var q = document.createElement("span");
-        q.textContent = r.quarter;
-        var info = document.createElement("small");
-        info.textContent = "Submitted " + Page.formatDate(r.submittedAt) + (r.reference ? " - " + r.reference : "");
-        var badge = document.createElement("span");
-        badge.className = "badge ok";
-        badge.textContent = "Submitted";
-        s.appendChild(q);
-        s.appendChild(info);
-        s.appendChild(badge);
+        var who = document.createElement("div");
+        var nm = document.createElement("p"); nm.className = "r-name"; nm.textContent = r.consulName || "";
+        var sub = document.createElement("p"); sub.className = "r-sub";
+        sub.textContent = (r.quarter || "") + " - submitted " + Page.formatDate(r.submittedAt) + (r.reference ? " - " + r.reference : "");
+        who.appendChild(nm); who.appendChild(sub);
+        s.appendChild(who);
+        var b = document.createElement("span");
+        b.className = "badge " + (isPending ? "warn" : "ok");
+        b.textContent = isPending ? "To review" : "Reviewed";
+        s.appendChild(b);
         d.appendChild(s);
 
         var review = document.createElement("div");
         review.className = "review";
         var dl = document.createElement("dl");
         var c = r.content || {};
-        addReviewRow(dl, "Summary of activities", c.summary);
-        addReviewRow(dl, "Achievements", c.achievements);
-        addReviewRow(dl, "Challenges", c.challenges);
-        addReviewRow(dl, "Plans for next quarter", c.plans);
-        addReviewRow(dl, "Attachments", (c.attachments || []).join(", "));
+        addRow(dl, "Summary of activities", c.summary);
+        addRow(dl, "Achievements", c.achievements);
+        addRow(dl, "Challenges", c.challenges);
+        addRow(dl, "Plans for next quarter", c.plans);
+        addRow(dl, "Attachments", (c.attachments || []).join(", "));
         review.appendChild(dl);
         d.appendChild(review);
 
-        wrap.appendChild(d);
+        if (isPending) {
+          var box = document.createElement("div");
+          box.className = "review-box";
+          var field = document.createElement("div");
+          field.className = "field";
+          var label = document.createElement("label");
+          label.textContent = "Comment for the consul (optional)";
+          var area = document.createElement("textarea");
+          area.maxLength = 1000;
+          var id = "comment-" + r.id;
+          area.id = id; label.setAttribute("for", id);
+          field.appendChild(label); field.appendChild(area);
+          box.appendChild(field);
+
+          var actions = document.createElement("div");
+          actions.className = "form-actions";
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn btn-primary";
+          btn.textContent = "Mark as reviewed";
+          btn.addEventListener("click", function () { markReviewed(r.id, area.value.trim(), btn); });
+          actions.appendChild(btn);
+          box.appendChild(actions);
+          d.appendChild(box);
+        } else {
+          var note = document.createElement("p");
+          note.className = "done-note";
+          note.textContent = "Reviewed " + Page.formatDate(r.reviewedAt) +
+            (r.comment ? ". Your comment: " + r.comment : ". No comment added.");
+          d.appendChild(note);
+        }
+        list.appendChild(d);
       });
+
+      byId("emptyBox").hidden = shown.length > 0;
+      byId("emptyText").textContent = filter === "pending"
+        ? "No reports are waiting for your review."
+        : "No reports to show.";
     }
 
-    function render(reports) {
-      // The open report is the one not yet submitted, earliest due date first
-      var open = reports
-        .filter(function (r) { return r.status !== "submitted"; })
-        .sort(function (a, b) { return a.dueDate < b.dueDate ? -1 : 1; });
-      current = open.length ? open[0] : null;
-
-      byId("currentCard").hidden = !current;
-      if (current) {
-        drawCurrentHeader();
-        fillForm(current);
-        showStep(1);
-      }
-
-      var rc = byId("receipt");
-      rc.hidden = !receipt;
-      if (receipt) {
-        byId("rcQuarter").textContent = receipt.quarter;
-        byId("rcRef").textContent     = receipt.reference || "-";
-        byId("rcDate").textContent    = Page.formatDate(receipt.submittedAt);
-      }
-
-      drawPast(reports);
-      showState("content");
+    function markReviewed(id, comment, btn) {
+      showActionError("");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+      Api.reviewHomReport(id, comment)
+        .then(function () { return Api.getHomReports(); })
+        .then(function (data) {
+          reports = data || [];
+          openId = id;
+          render();
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = "Mark as reviewed";
+          if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
+          showActionError(err && err.code === "LOCKED"
+            ? "This report was already reviewed."
+            : "That did not work. Please try again.");
+          console.error("Review error:", err);
+        });
     }
+
+    byId("tabPending").addEventListener("click",  function () { filter = "pending";  render(); });
+    byId("tabReviewed").addEventListener("click", function () { filter = "reviewed"; render(); });
+    byId("tabAll").addEventListener("click",      function () { filter = "all";      render(); });
 
     function load() {
       showState("loading");
-      Api.getReports().then(render).catch(handleError);
+      Api.getHomReports()
+        .then(function (data) { reports = data || []; render(); showState("content"); })
+        .catch(function (e) { handleError(e, "the reports"); });
     }
 
     byId("retryBtn").addEventListener("click", load);
 
-    if (Page.init("reports")) load();
+    if (Page.init("reports", ["head_of_mission"])) load();
   </script>
 </body>
 </html>
