@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Consuls | e-HCMS Head of Mission</title>
+
+  <!-- Fonts (needs internet while developing) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green: #2f9e2f; --green-dark: #247a24; --text: #111111;
+      --header-bg: #e3e3e3; --hero-bg: #ececec; --footer-bg: #ebebeb;
+      --border: #555555; --nav-active: #c8c8c8; --error: #b3261e;
+      --hero-overlay: 0.82;   /* 0 = background image fully visible, 1 = hidden */
+      --page-pad: clamp(16px, 4vw, 56px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+           font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; color: var(--text); background: var(--hero-bg); }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Header ---------- */
+    .site-header { background: var(--header-bg); padding: 22px var(--page-pad) 0; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+    .brand-name { font-size: 17px; line-height: 1.15; text-align: center; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .user-label { font-size: 17px; line-height: 1.15; text-align: right; }
+    .user-label small { display: block; font-size: 14px; color: #555555; }
+    .avatar { width: 52px; height: 52px; flex-shrink: 0; }
+    .btn { display: inline-block; font-family: "Roboto", Arial, sans-serif; color: var(--text); background: #f2f2f2;
+           border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: background 0.15s ease; }
+    .btn:hover { background: #ffffff; }
+    .btn-small { padding: 11px 18px; font-size: 15px; text-transform: uppercase; background: #ededed; border-color: #9a9a9a; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 18px 0 16px;
+                font-family: "Roboto", Arial, sans-serif; font-size: 16px; }
+    .main-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px; }
+    .main-nav a:hover { background: #d4d4d4; }
+    .main-nav a.active { background: var(--nav-active); }
+    .main-nav a.soon { color: #6a6a6a; cursor: not-allowed; }
+    .main-nav a.soon:hover { background: transparent; }
+    .nav-badge { min-width: 20px; padding: 1px 6px; font-size: 12px; font-weight: 700; text-align: center;
+                 color: #ffffff; background: #b3261e; border-radius: 10px; }
+
+    .flag-strip { height: 8px; position: relative; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      background: linear-gradient(to bottom, #000 0, #000 2px, #fff 2px, #fff 3px, #bb0000 3px, #bb0000 5px, #fff 5px, #fff 6px, #006600 6px, #006600 8px); }
+
+    /* ---------- Page ---------- */
+    .page { position: relative; flex: 1; padding: 36px var(--page-pad) 48px; background-color: var(--hero-bg);
+            background-size: contain; background-position: center; background-repeat: no-repeat; isolation: isolate; }
+    .page::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,var(--hero-overlay)); z-index: -1; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .demo-banner { margin: 0 0 18px; padding: 10px 16px; font-family: "Roboto", Arial, sans-serif; font-size: 14px;
+                   color: #5c4400; background: #fff3cd; border: 1px solid #f0d98a; border-radius: 10px; }
+    .page-title { margin: 0 0 4px; font-family: "Roboto", Arial, sans-serif; font-weight: 900;
+                  font-size: clamp(28px, 4vw, 38px); line-height: 1.15; color: var(--green); }
+    .page-sub { margin: 0 0 22px; font-size: 18px; color: #333333; }
+
+    .card { padding: 22px 24px; margin-bottom: 20px; background: rgba(255,255,255,0.78);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 14px 40px rgba(0,0,0,0.1); }
+    .badge { display: inline-block; padding: 4px 12px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700; border-radius: 999px; }
+    .badge.ok { color: #14551b; background: #d9f2dc; } .badge.warn { color: #6b4a00; background: #fff0c2; }
+    .badge.grey { color: #444444; background: #e6e6e6; }
+
+    .state-box { padding: 36px 24px; text-align: center; font-size: 18px; }
+    .state-box .btn { margin-top: 14px; padding: 11px 22px; font-size: 16px; }
+    .spinner { width: 34px; height: 34px; margin: 0 auto 12px; border: 4px solid #d8d8d8; border-top-color: var(--green);
+               border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .card h2 { margin: 0 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700;
+               letter-spacing: 0.7px; text-transform: uppercase; color: #555555; }
+    .btn-primary { padding: 13px 26px; font-size: 16px; font-weight: 500; color: #ffffff; background: var(--green); border-color: var(--green); }
+    .btn-primary:hover { background: var(--green-dark); }
+    .badge.orange { color: #7a3a00; background: #ffe0c2; } .badge.danger { color: #7a1a14; background: #fde0dd; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 6px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; font-weight: 500; }
+    .field input[type="text"], .field input[type="date"], .field select, .field textarea {
+      width: 100%; padding: 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 16px; color: var(--text);
+      background: #ffffff; border: 1px solid #b9b9b9; border-radius: 8px; }
+    .field input[type="text"], .field input[type="date"], .field select { height: 46px; }
+    .field textarea { padding: 12px 14px; min-height: 120px; resize: vertical; line-height: 1.45; }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,158,47,0.2); }
+    .field [aria-invalid="true"] { border-color: var(--error); }
+    .field input[type="file"] { width: 100%; font-family: "Roboto", Arial, sans-serif; font-size: 15px; }
+    .field .hint { margin: 5px 0 0; font-size: 14px; color: var(--error); min-height: 18px; }
+    .field .help { margin: 5px 0 0; font-size: 14px; color: #555555; }
+    .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 6px; }
+    .form-msg { margin: 0; font-size: 16px; }
+    .form-msg.ok { color: #14551b; } .form-msg.error { color: var(--error); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .chip { padding: 4px 12px; font-size: 15px; background: #e6f1e7; border-radius: 999px; overflow-wrap: anywhere; }
+    /* ---------- My consuls ---------- */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-bottom: 16px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab { padding: 9px 18px; font-family: "Roboto", Arial, sans-serif; font-size: 15px; color: var(--text);
+           background: rgba(255,255,255,0.8); border: 1px solid #b9b9b9; border-radius: 999px; cursor: pointer; }
+    .tab[aria-pressed="true"] { color: #ffffff; background: var(--green); border-color: var(--green); }
+    .search { width: min(100%, 280px); height: 44px; padding: 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 16px;
+              background: #ffffff; border: 1px solid #b9b9b9; border-radius: 8px; }
+    .search:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,158,47,0.2); }
+    details.consul { margin-bottom: 12px; padding: 16px 20px; background: rgba(255,255,255,0.85); border: 1px solid #dcdcdc;
+                     border-left: 6px solid #d0d0d0; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    details.consul.ok { border-left-color: var(--green); } details.consul.warn { border-left-color: #e0a100; }
+    details.consul.orange { border-left-color: #e8710a; } details.consul.danger { border-left-color: #b3261e; }
+    details.consul summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; cursor: pointer; }
+    .c-name { margin: 0; font-size: 19px; font-weight: 700; }
+    .c-city { margin: 2px 0 0; font-size: 14px; color: #666666; }
+    .c-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px 24px; margin: 16px 0 0; }
+    .detail-grid dt { font-family: "Roboto", Arial, sans-serif; font-size: 13px; color: #666666; margin-bottom: 2px; }
+    .detail-grid dd { margin: 0; font-size: 17px; overflow-wrap: anywhere; }
+    .reasons { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .empty { margin: 0; text-align: center; font-size: 18px; color: #555555; }
+    .container { max-width: 1060px; }
+
+    /* ---------- Footer ---------- */
+    .site-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 24px;
+                   padding: 18px var(--page-pad); background: var(--footer-bg); border-top: 1px solid #d0d0d0; font-size: 15px; }
+    .site-footer p { margin: 0; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .header-top { flex-wrap: wrap; justify-content: center; }
+      .user-label { display: none; }
+      .item { flex-direction: column; }
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) { .btn { transition: none; } .spinner { animation-duration: 2.4s; } }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="header-top">
+      <a class="brand" id="brandLink" href="dashboard.html">
+        <img data-name="logo" alt="Ministry logo" class="brand-logo">
+        <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
+      </a>
+      <div class="header-right">
+        <span class="user-label"><span id="headerName">Honorary Consul</span><small id="headerRole">Honorary Consul</small></span>
+        <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="User profile">
+          <circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/>
+          <path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/>
+        </svg>
+        <button type="button" class="btn btn-small" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <!-- The menu is built by js/common.js -->
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation"></nav>
+  </header>
+
+  <div class="flag-strip" aria-hidden="true"></div>
+
+  <!-- ============ MY CONSULS ============ -->
+  <main class="page" id="page">
+    <div class="container">
+
+      <p class="demo-banner" id="demoBanner" hidden>
+        Demo mode: this page is showing sample data. To use the real server,
+        set <strong>USE_MOCK</strong> to <strong>false</strong> in <strong>js/api.js</strong>.
+      </p>
+
+      <h1 class="page-title">My Consuls</h1>
+      <p class="page-sub">The Honorary Consuls assigned to your mission. Click a name for details.</p>
+
+      <div class="card state-box" id="loadingBox" role="status">
+        <div class="spinner" aria-hidden="true"></div>
+        Loading your consuls...
+      </div>
+
+      <div class="card state-box" id="errorBox" hidden role="alert">
+        <p id="errorText" style="margin:0;">Something went wrong.</p>
+        <button type="button" class="btn" id="retryBtn">Try again</button>
+      </div>
+
+      <div id="content" hidden>
+        <div class="toolbar">
+          <div class="tabs" role="group" aria-label="Filter consuls">
+            <button type="button" class="tab" id="tabAll" aria-pressed="true">All</button>
+            <button type="button" class="tab" id="tabAttention" aria-pressed="false">Need attention</button>
+            <button type="button" class="tab" id="tabExpiring" aria-pressed="false">Expiring (90 days)</button>
+          </div>
+          <label class="sr-only" for="search">Search consuls</label>
+          <input type="search" class="search" id="search" placeholder="Search by name or city">
+        </div>
+
+        <div id="list"></div>
+        <div class="card" id="emptyBox" hidden><p class="empty">No consuls match.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <p>Copyright <span id="year">2026</span> Republic of Kenya</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#">Essential links</a>
+      <a href="contact.html">Contact us</a>
+      <a href="#">Government links</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+
+  <script>
+    var byId = Page.byId;
+
+    function showState(which) {
+      byId("loadingBox").hidden = which !== "loading";
+      byId("errorBox").hidden   = which !== "error";
+      byId("content").hidden    = which !== "content";
+    }
+
+    function handleError(err, what) {
+      if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
+      byId("errorText").textContent = (err && err.code === "NETWORK")
+        ? "Cannot reach the server. Check your connection or the API address in js/api.js."
+        : "We could not load " + what + ". Please try again.";
+      showState("error");
+      console.error("Load error:", err);
+    }
+
+    var consuls = [];
+    var filter = "all";          // "all", "attention" or "expiring"
+    var query = "";
+
+    var REPORT = {
+      submitted:   ["Report submitted", "ok"],
+      draft:       ["Report in draft", "warn"],
+      not_started: ["Report not started", "grey"],
+      overdue:     ["Report overdue", "danger"]
+    };
+
+    function row(dl, label, value) {
+      var wrap = document.createElement("div");
+      var dt = document.createElement("dt"); dt.textContent = label;
+      var dd = document.createElement("dd"); dd.textContent = value || "-";
+      wrap.appendChild(dt); wrap.appendChild(dd);
+      dl.appendChild(wrap);
+    }
+
+    function badge(parent, text, level) {
+      var b = document.createElement("span");
+      b.className = "badge " + level;
+      b.textContent = text;
+      parent.appendChild(b);
+    }
+
+    function daysOf(c) {
+      return (typeof c.daysRemaining === "number") ? c.daysRemaining : Page.daysUntil(c.contractEndDate);
+    }
+
+    function matches(c) {
+      var days = daysOf(c);
+      if (filter === "attention" && !(c.attentionReasons && c.attentionReasons.length)) return false;
+      if (filter === "expiring" && !(days !== null && days <= 90)) return false;
+      if (query) {
+        var text = ((c.name || "") + " " + (c.city || "")).toLowerCase();
+        if (text.indexOf(query) === -1) return false;
+      }
+      return true;
+    }
+
+    function render() {
+      var attn = consuls.filter(function (c) { return c.attentionReasons && c.attentionReasons.length; }).length;
+      var exp  = consuls.filter(function (c) { var d = daysOf(c); return d !== null && d <= 90; }).length;
+      byId("tabAll").textContent       = "All (" + consuls.length + ")";
+      byId("tabAttention").textContent = "Need attention (" + attn + ")";
+      byId("tabExpiring").textContent  = "Expiring (90 days) (" + exp + ")";
+      byId("tabAll").setAttribute("aria-pressed", String(filter === "all"));
+      byId("tabAttention").setAttribute("aria-pressed", String(filter === "attention"));
+      byId("tabExpiring").setAttribute("aria-pressed", String(filter === "expiring"));
+
+      var shown = consuls.filter(matches);
+      var list = byId("list");
+      list.textContent = "";
+
+      shown.forEach(function (c) {
+        var days = daysOf(c);
+        var level = Page.levelFor(days);
+
+        var d = document.createElement("details");
+        d.className = "consul " + level;
+
+        var s = document.createElement("summary");
+        var who = document.createElement("div");
+        var nm = document.createElement("p"); nm.className = "c-name"; nm.textContent = c.name || "";
+        var city = document.createElement("p"); city.className = "c-city"; city.textContent = c.city || "";
+        who.appendChild(nm); who.appendChild(city);
+        s.appendChild(who);
+
+        var badges = document.createElement("div");
+        badges.className = "c-badges";
+        badge(badges, days === null ? "Contract unknown" : (days < 0 ? "Contract expired" : Page.plural(days, "day") + " left"), level);
+        var rp = REPORT[c.reportStatus] || ["Report unknown", "grey"];
+        badge(badges, rp[0], rp[1]);
+        s.appendChild(badges);
+        d.appendChild(s);
+
+        var dl = document.createElement("dl");
+        dl.className = "detail-grid";
+        row(dl, "Email", c.email);
+        row(dl, "Phone", c.phone);
+        row(dl, "Appointed", Page.formatDate(c.appointmentDate));
+        row(dl, "Contract ends", Page.formatDate(c.contractEndDate));
+        row(dl, "Last activity", Page.formatDate(c.lastActivity));
+        row(dl, "Work log entries this quarter", String(c.entriesThisQuarter == null ? "-" : c.entriesThisQuarter));
+        d.appendChild(dl);
+
+        if (c.attentionReasons && c.attentionReasons.length) {
+          var reasons = document.createElement("div");
+          reasons.className = "reasons";
+          c.attentionReasons.forEach(function (r) { badge(reasons, r, "warn"); });
+          d.appendChild(reasons);
+        }
+        list.appendChild(d);
+      });
+
+      byId("emptyBox").hidden = shown.length > 0;
+    }
+
+    byId("tabAll").addEventListener("click",       function () { filter = "all";       render(); });
+    byId("tabAttention").addEventListener("click", function () { filter = "attention"; render(); });
+    byId("tabExpiring").addEventListener("click",  function () { filter = "expiring";  render(); });
+    byId("search").addEventListener("input", function () { query = this.value.trim().toLowerCase(); render(); });
+
+    function load() {
+      showState("loading");
+      Api.getHomConsuls()
+        .then(function (data) { consuls = data || []; render(); showState("content"); })
+        .catch(function (e) { handleError(e, "your consuls"); });
+    }
+
+    byId("retryBtn").addEventListener("click", load);
+
+    if (Page.init("consuls", ["head_of_mission"])) load();
+  </script>
+</body>
+</html>

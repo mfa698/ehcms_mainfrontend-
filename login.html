@@ -212,6 +212,8 @@
       text-align: center;
     }
 
+    .demo-hint { margin: 12px 0 0; padding: 8px 12px; font-size: 13px; line-height: 1.4; color: #5c4400; background: #fff3cd; border-radius: 8px; }
+    [hidden] { display: none !important; }
     .form-message.error { color: var(--error); }
     .form-message.info  { color: var(--green-link); }
 
@@ -281,13 +283,14 @@
       <!-- Login form -->
       <form id="loginForm" novalidate>
         <div class="field">
-          <label class="sr-only" for="username">Official email or username</label>
+          <label class="sr-only" for="workId">Work ID</label>
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <circle cx="9" cy="11" r="2"/>
+            <path d="M6 16c.6-1.4 1.7-2 3-2s2.4.6 3 2M14.5 10h4M14.5 13h4"/>
           </svg>
-          <input type="text" id="username" name="username" placeholder="Official Email/Username"
-                 autocomplete="username" required>
+          <input type="text" id="workId" name="workId" placeholder="Work ID"
+                 autocomplete="username" autocapitalize="characters" spellcheck="false" required>
         </div>
 
         <div class="field">
@@ -306,6 +309,7 @@
         <button type="submit" class="btn-login" id="loginBtn">Log in</button>
 
         <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+        <p class="demo-hint" id="demoHint" hidden>Demo mode: use a Work ID starting with <strong>HOM</strong> (for example HOM001) to enter as Head of Mission. Any other Work ID enters as Honorary Consul.</p>
       </form>
     </section>
   </main>
@@ -330,10 +334,11 @@
        1) FORM BEHAVIOUR
        ========================================================== */
     var form    = document.getElementById("loginForm");
-    var userEl  = document.getElementById("username");
+    var userEl  = document.getElementById("workId");
     var passEl  = document.getElementById("password");
     var btn     = document.getElementById("loginBtn");
     var message = document.getElementById("formMessage");
+    document.getElementById("demoHint").hidden = !API_CONFIG.USE_MOCK;
 
     function showMessage(text, type) {
       message.textContent = text;
@@ -343,15 +348,15 @@
     form.addEventListener("submit", function (event) {
       event.preventDefault();          // stop the page from reloading
 
-      var username = userEl.value.trim();
+      var workId   = userEl.value.trim();
       var password = passEl.value;
 
       userEl.removeAttribute("aria-invalid");
       passEl.removeAttribute("aria-invalid");
 
-      if (!username) {
+      if (!workId) {
         userEl.setAttribute("aria-invalid", "true");
-        showMessage("Enter your official email or username.", "error");
+        showMessage("Enter your Work ID.", "error");
         userEl.focus();
         return;
       }
@@ -368,12 +373,13 @@
       btn.textContent = "Logging in...";
       showMessage("", "info");
 
-      Api.login(username, password)
+      Api.login(workId, password)
         .then(function (session) {
-          if (session.user && session.user.role === "honorary_consul") {
-            window.location.href = "dashboard.html";
+          var home = Api.homeFor(session.user && session.user.role);
+          if (home) {
+            window.location.href = home;         // each role opens its own portal
           } else {
-            // Other roles (Head of Mission, HQ) have no portal built yet
+            // A role whose portal is not built yet
             Api.logout();
             showMessage("This account's portal is not available yet.", "error");
             btn.disabled = false;
@@ -382,7 +388,7 @@
         })
         .catch(function (err) {
           var text = "Login failed. Please try again.";
-          if (err && err.code === "AUTH")    text = "Wrong username or password.";
+          if (err && err.code === "AUTH")    text = "Incorrect Work ID or password.";
           if (err && err.code === "NETWORK") text = "Cannot reach the server. Check the API address in js/api.js.";
           showMessage(text, "error");
           btn.disabled = false;

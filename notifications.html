@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Notifications | e-HCMS Honorary Consul</title>
+  <title>Notifications | e-HCMS</title>
 
   <!-- Fonts (needs internet while developing) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -126,12 +126,12 @@
   <!-- ============ HEADER ============ -->
   <header class="site-header">
     <div class="header-top">
-      <a class="brand" href="dashboard.html">
+      <a class="brand" id="brandLink" href="dashboard.html">
         <img data-name="logo" alt="Ministry logo" class="brand-logo">
         <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
       </a>
       <div class="header-right">
-        <span class="user-label"><span id="headerName">Honorary Consul</span><small>Honorary Consul</small></span>
+        <span class="user-label"><span id="headerName">Honorary Consul</span><small id="headerRole">Honorary Consul</small></span>
         <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="User profile">
           <circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/>
           <path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/>
@@ -340,7 +340,7 @@
 
     byId("retryBtn").addEventListener("click", load);
 
-    if (Page.init("notifications")) load();
+    if (Page.init("notifications", ["honorary_consul", "head_of_mission"])) load();
   </script>
 </body>
 </html>

@@ -1,23 +1,41 @@
 /* ==========================================================
-   e-HCMS COMMON PAGE CODE (Honorary Consul pages)
-   Every Consul page calls  Page.init("something")  once.
+   e-HCMS COMMON PAGE CODE (all portals)
+   Every page calls  Page.init("menu-key", [allowed roles])  once.
    It takes care of: login check, menu, user name, log out,
    notification badge, footer year, logo and background image.
 
-   TO ADD A NEW PAGE TO THE MENU later, edit NAV_ITEMS below:
-   change  built: false  to  built: true  when the page exists.
+   TO ADD A NEW PAGE TO A MENU later, edit ROLES below.
    ========================================================== */
 var Page = (function () {
 
-  var ROLE = "honorary_consul";
-
-  var NAV_ITEMS = [
-    { key: "dashboard",     label: "Dashboard",         href: "dashboard.html",         built: true  },
-    { key: "profile",       label: "My Profile",        href: "my-profile.html",        built: true  },
-    { key: "worklog",       label: "Work Log",          href: "work-log.html",          built: false },
-    { key: "reports",       label: "Quarterly Reports", href: "quarterly-reports.html", built: false },
-    { key: "notifications", label: "Notifications",     href: "notifications.html",     built: true, badge: true }
-  ];
+  /* Each role has its own title, home page and menu.
+     TO ADD A PAGE to a menu, change  built: false  to  built: true  when the page exists.
+     Role names must match what the backend sends (see ROLE_HOMES in js/api.js). */
+  var ROLES = {
+    honorary_consul: {
+      title: "Honorary Consul",
+      home: "dashboard.html",
+      nav: [
+        { key: "dashboard",     label: "Dashboard",         href: "dashboard.html",         built: true  },
+        { key: "profile",       label: "My Profile",        href: "my-profile.html",        built: true  },
+        { key: "worklog",       label: "Work Log",          href: "work-log.html",          built: true  },
+        { key: "reports",       label: "Quarterly Reports", href: "quarterly-reports.html", built: true  },
+        { key: "notifications", label: "Notifications",     href: "notifications.html",     built: true, badge: true }
+      ]
+    },
+    head_of_mission: {
+      title: "Head of Mission",
+      home: "hom-dashboard.html",
+      nav: [
+        { key: "dashboard",       label: "Dashboard",       href: "hom-dashboard.html",       built: true  },
+        { key: "consuls",         label: "My Consuls",      href: "hom-consuls.html",         built: true  },
+        { key: "reports",         label: "Reports",         href: "hom-reports.html",         built: true  },
+        { key: "performance",     label: "Performance",     href: "hom-performance.html",     built: true  },
+        { key: "recommendations", label: "Recommendations", href: "hom-recommendations.html", built: true  },
+        { key: "notifications",   label: "Notifications",   href: "notifications.html",       built: true, badge: true }
+      ]
+    }
+  };
 
   /* BACKGROUND SETTINGS for all pages that use this file
      size:     "contain" = whole image fits, "auto 85%" = a bit smaller
@@ -56,14 +74,49 @@ var Page = (function () {
 
   function plural(n, word) { return n + " " + word + (Math.abs(n) === 1 ? "" : "s"); }
 
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+
+  // Today as YYYY-MM-DD (local time)
+  function todayText() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  }
+
+  // "2026-11-13" -> "Q4 2026"
+  function quarterOf(text) {
+    var d = new Date(text + "T00:00:00");
+    return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear();
+  }
+
+  // Checks files chosen for upload. Returns an error message, or "" if all are fine.
+  // The server must check again: this is only to help the user early.
+  var ALLOWED_TYPES = ["pdf", "png", "jpg", "jpeg", "docx"];
+  var MAX_FILE_MB = 5;
+  var MAX_FILES = 5;
+
+  function checkFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    if (files.length > MAX_FILES) return "You can attach up to " + MAX_FILES + " files.";
+    for (var i = 0; i < files.length; i++) {
+      var ext = files[i].name.split(".").pop().toLowerCase();
+      if (ALLOWED_TYPES.indexOf(ext) === -1) {
+        return files[i].name + " is not allowed. Use PDF, PNG, JPG or DOCX files.";
+      }
+      if (files[i].size > MAX_FILE_MB * 1024 * 1024) {
+        return files[i].name + " is larger than " + MAX_FILE_MB + " MB.";
+      }
+    }
+    return "";
+  }
+
 
   /* ---------- menu ---------- */
-  function buildNav(activeKey) {
+  function buildNav(activeKey, role) {
     var nav = byId("mainNav");
     if (!nav) return;
     nav.textContent = "";
 
-    NAV_ITEMS.forEach(function (item) {
+    ROLES[role].nav.forEach(function (item) {
       var a = document.createElement("a");
       a.textContent = item.label;
 
@@ -176,17 +229,29 @@ var Page = (function () {
 
 
   /* ---------- start-up ---------- */
-  // Returns true if the page may continue, false if the user was sent to login.
-  function init(activeKey) {
+  // Returns true if the page may continue, false if the user was sent elsewhere.
+  // allowedRoles = who may open this page (default: Honorary Consul only).
+  function init(activeKey, allowedRoles) {
+    var allowed = allowedRoles || ["honorary_consul"];
     var user = Api.getUser();
 
     // Convenience only. The real protection must be done by the backend.
-    if (!Api.isLoggedIn() || !user || user.role !== ROLE) {
+    if (!Api.isLoggedIn() || !user || !ROLES[user.role]) {
       window.location.replace("login.html");
       return false;
     }
+    if (allowed.indexOf(user.role) === -1) {
+      window.location.replace(ROLES[user.role].home);     // send them to their own portal
+      return false;
+    }
 
-    buildNav(activeKey);
+    buildNav(activeKey, user.role);
+
+    var roleEl = byId("headerRole");
+    if (roleEl) roleEl.textContent = ROLES[user.role].title;
+
+    var brand = byId("brandLink");
+    if (brand) brand.href = ROLES[user.role].home;
 
     var nameEl = byId("headerName");
     if (nameEl) nameEl.textContent = user.name || "Honorary Consul";
@@ -217,6 +282,9 @@ var Page = (function () {
     formatDate: formatDate,
     daysUntil: daysUntil,
     levelFor: levelFor,
-    plural: plural
+    plural: plural,
+    todayText: todayText,
+    quarterOf: quarterOf,
+    checkFiles: checkFiles
   };
 })();

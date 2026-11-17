@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports | e-HCMS Head of Mission</title>
+
+  <!-- Fonts (needs internet while developing) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --green: #2f9e2f; --green-dark: #247a24; --text: #111111;
+      --header-bg: #e3e3e3; --hero-bg: #ececec; --footer-bg: #ebebeb;
+      --border: #555555; --nav-active: #c8c8c8; --error: #b3261e;
+      --hero-overlay: 0.82;   /* 0 = background image fully visible, 1 = hidden */
+      --page-pad: clamp(16px, 4vw, 56px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+           font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; color: var(--text); background: var(--hero-bg); }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 3px solid #1a5fb4; outline-offset: 2px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Header ---------- */
+    .site-header { background: var(--header-bg); padding: 22px var(--page-pad) 0; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand-logo { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; }
+    .brand-name { font-size: 17px; line-height: 1.15; text-align: center; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .user-label { font-size: 17px; line-height: 1.15; text-align: right; }
+    .user-label small { display: block; font-size: 14px; color: #555555; }
+    .avatar { width: 52px; height: 52px; flex-shrink: 0; }
+    .btn { display: inline-block; font-family: "Roboto", Arial, sans-serif; color: var(--text); background: #f2f2f2;
+           border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: background 0.15s ease; }
+    .btn:hover { background: #ffffff; }
+    .btn-small { padding: 11px 18px; font-size: 15px; text-transform: uppercase; background: #ededed; border-color: #9a9a9a; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 18px 0 16px;
+                font-family: "Roboto", Arial, sans-serif; font-size: 16px; }
+    .main-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px; }
+    .main-nav a:hover { background: #d4d4d4; }
+    .main-nav a.active { background: var(--nav-active); }
+    .main-nav a.soon { color: #6a6a6a; cursor: not-allowed; }
+    .main-nav a.soon:hover { background: transparent; }
+    .nav-badge { min-width: 20px; padding: 1px 6px; font-size: 12px; font-weight: 700; text-align: center;
+                 color: #ffffff; background: #b3261e; border-radius: 10px; }
+
+    .flag-strip { height: 8px; position: relative; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      background: linear-gradient(to bottom, #000 0, #000 2px, #fff 2px, #fff 3px, #bb0000 3px, #bb0000 5px, #fff 5px, #fff 6px, #006600 6px, #006600 8px); }
+
+    /* ---------- Page ---------- */
+    .page { position: relative; flex: 1; padding: 36px var(--page-pad) 48px; background-color: var(--hero-bg);
+            background-size: contain; background-position: center; background-repeat: no-repeat; isolation: isolate; }
+    .page::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,var(--hero-overlay)); z-index: -1; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .demo-banner { margin: 0 0 18px; padding: 10px 16px; font-family: "Roboto", Arial, sans-serif; font-size: 14px;
+                   color: #5c4400; background: #fff3cd; border: 1px solid #f0d98a; border-radius: 10px; }
+    .page-title { margin: 0 0 4px; font-family: "Roboto", Arial, sans-serif; font-weight: 900;
+                  font-size: clamp(28px, 4vw, 38px); line-height: 1.15; color: var(--green); }
+    .page-sub { margin: 0 0 22px; font-size: 18px; color: #333333; }
+
+    .card { padding: 22px 24px; margin-bottom: 20px; background: rgba(255,255,255,0.78);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 14px 40px rgba(0,0,0,0.1); }
+    .badge { display: inline-block; padding: 4px 12px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700; border-radius: 999px; }
+    .badge.ok { color: #14551b; background: #d9f2dc; } .badge.warn { color: #6b4a00; background: #fff0c2; }
+    .badge.grey { color: #444444; background: #e6e6e6; }
+
+    .state-box { padding: 36px 24px; text-align: center; font-size: 18px; }
+    .state-box .btn { margin-top: 14px; padding: 11px 22px; font-size: 16px; }
+    .spinner { width: 34px; height: 34px; margin: 0 auto 12px; border: 4px solid #d8d8d8; border-top-color: var(--green);
+               border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .card h2 { margin: 0 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700;
+               letter-spacing: 0.7px; text-transform: uppercase; color: #555555; }
+    .btn-primary { padding: 13px 26px; font-size: 16px; font-weight: 500; color: #ffffff; background: var(--green); border-color: var(--green); }
+    .btn-primary:hover { background: var(--green-dark); }
+    .badge.orange { color: #7a3a00; background: #ffe0c2; } .badge.danger { color: #7a1a14; background: #fde0dd; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { display: block; margin-bottom: 6px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; font-weight: 500; }
+    .field input[type="text"], .field input[type="date"], .field select, .field textarea {
+      width: 100%; padding: 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 16px; color: var(--text);
+      background: #ffffff; border: 1px solid #b9b9b9; border-radius: 8px; }
+    .field input[type="text"], .field input[type="date"], .field select { height: 46px; }
+    .field textarea { padding: 12px 14px; min-height: 120px; resize: vertical; line-height: 1.45; }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,158,47,0.2); }
+    .field [aria-invalid="true"] { border-color: var(--error); }
+    .field input[type="file"] { width: 100%; font-family: "Roboto", Arial, sans-serif; font-size: 15px; }
+    .field .hint { margin: 5px 0 0; font-size: 14px; color: var(--error); min-height: 18px; }
+    .field .help { margin: 5px 0 0; font-size: 14px; color: #555555; }
+    .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 6px; }
+    .form-msg { margin: 0; font-size: 16px; }
+    .form-msg.ok { color: #14551b; } .form-msg.error { color: var(--error); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .chip { padding: 4px 12px; font-size: 15px; background: #e6f1e7; border-radius: 999px; overflow-wrap: anywhere; }
+    /* ---------- HoM reports ---------- */
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tab { padding: 9px 18px; font-family: "Roboto", Arial, sans-serif; font-size: 15px; color: var(--text);
+           background: rgba(255,255,255,0.8); border: 1px solid #b9b9b9; border-radius: 999px; cursor: pointer; }
+    .tab[aria-pressed="true"] { color: #ffffff; background: var(--green); border-color: var(--green); }
+    details.rep { margin-bottom: 12px; padding: 16px 20px; background: rgba(255,255,255,0.85); border: 1px solid #dcdcdc;
+                  border-left: 6px solid #d0d0d0; border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    details.rep.pending { border-left-color: #e0a100; } details.rep.done { border-left-color: var(--green); }
+    details.rep summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; cursor: pointer; }
+    .r-name { margin: 0; font-size: 19px; font-weight: 700; }
+    .r-sub { margin: 2px 0 0; font-size: 14px; color: #666666; }
+    .review { margin-top: 16px; }
+    .review dl { margin: 0; display: grid; gap: 14px; }
+    .review dt { font-family: "Roboto", Arial, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #666666; }
+    .review dd { margin: 4px 0 0; font-size: 17px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .review-box { margin-top: 18px; padding-top: 16px; border-top: 1px solid #e0e0e0; }
+    .review-box .field textarea { min-height: 90px; }
+    .review-box .form-actions { margin-top: 12px; }
+    .done-note { margin: 18px 0 0; padding: 12px 16px; font-size: 16px; background: #eaf5eb; border-radius: 10px; overflow-wrap: anywhere; }
+    .error-line { margin: 0 0 12px; padding: 10px 16px; font-family: "Roboto", Arial, sans-serif; font-size: 14px;
+                  color: #7a1a14; background: #fde7e5; border: 1px solid #f2b8b4; border-radius: 10px; }
+    .empty { margin: 0; text-align: center; font-size: 18px; color: #555555; }
+    .container { max-width: 960px; }
+
+    /* ---------- Footer ---------- */
+    .site-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 24px;
+                   padding: 18px var(--page-pad); background: var(--footer-bg); border-top: 1px solid #d0d0d0; font-size: 15px; }
+    .site-footer p { margin: 0; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .header-top { flex-wrap: wrap; justify-content: center; }
+      .user-label { display: none; }
+      .item { flex-direction: column; }
+      .site-footer { flex-direction: column; align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) { .btn { transition: none; } .spinner { animation-duration: 2.4s; } }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="header-top">
+      <a class="brand" id="brandLink" href="dashboard.html">
+        <img data-name="logo" alt="Ministry logo" class="brand-logo">
+        <span class="brand-name">ministry of foreign and<br>diaspora affairs</span>
+      </a>
+      <div class="header-right">
+        <span class="user-label"><span id="headerName">Honorary Consul</span><small id="headerRole">Honorary Consul</small></span>
+        <svg class="avatar" viewBox="0 0 64 64" role="img" aria-label="User profile">
+          <circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/>
+          <path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/>
+        </svg>
+        <button type="button" class="btn btn-small" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <!-- The menu is built by js/common.js -->
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation"></nav>
+  </header>
+
+  <div class="flag-strip" aria-hidden="true"></div>
+
+  <!-- ============ HOM REPORTS ============ -->
+  <main class="page" id="page">
+    <div class="container">
+
+      <p class="demo-banner" id="demoBanner" hidden>
+        Demo mode: this page is showing sample data. To use the real server,
+        set <strong>USE_MOCK</strong> to <strong>false</strong> in <strong>js/api.js</strong>.
+      </p>
+
+      <h1 class="page-title">Reports</h1>
+      <p class="page-sub">Quarterly reports submitted by your consuls. Read each one, then mark it as reviewed.</p>
+
+      <div class="card state-box" id="loadingBox" role="status">
+        <div class="spinner" aria-hidden="true"></div>
+        Loading reports...
+      </div>
+
+      <div class="card state-box" id="errorBox" hidden role="alert">
+        <p id="errorText" style="margin:0;">Something went wrong.</p>
+        <button type="button" class="btn" id="retryBtn">Try again</button>
+      </div>
+
+      <div id="content" hidden>
+        <div class="tabs" role="group" aria-label="Filter reports">
+          <button type="button" class="tab" id="tabPending" aria-pressed="true">To review</button>
+          <button type="button" class="tab" id="tabReviewed" aria-pressed="false">Reviewed</button>
+          <button type="button" class="tab" id="tabAll" aria-pressed="false">All</button>
+        </div>
+        <p class="error-line" id="actionError" hidden role="alert"></p>
+        <div id="list"></div>
+        <div class="card" id="emptyBox" hidden><p class="empty" id="emptyText">No reports.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <p>Copyright <span id="year">2026</span> Republic of Kenya</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#">Essential links</a>
+      <a href="contact.html">Contact us</a>
+      <a href="#">Government links</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+
+  <script>
+    var byId = Page.byId;
+
+    function showState(which) {
+      byId("loadingBox").hidden = which !== "loading";
+      byId("errorBox").hidden   = which !== "error";
+      byId("content").hidden    = which !== "content";
+    }
+
+    function handleError(err, what) {
+      if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
+      byId("errorText").textContent = (err && err.code === "NETWORK")
+        ? "Cannot reach the server. Check your connection or the API address in js/api.js."
+        : "We could not load " + what + ". Please try again.";
+      showState("error");
+      console.error("Load error:", err);
+    }
+
+    var reports = [];
+    var filter = "pending";        // "pending", "reviewed" or "all"
+    var openId = null;             // keeps the report you were reading open after a refresh
+
+    function showActionError(text) {
+      var el = byId("actionError");
+      el.textContent = text || "";
+      el.hidden = !text;
+    }
+
+    function addRow(dl, label, value) {
+      var dt = document.createElement("dt"); dt.textContent = label;
+      var dd = document.createElement("dd"); dd.textContent = value || "Not provided";
+      dl.appendChild(dt); dl.appendChild(dd);
+    }
+
+    function render() {
+      var pending  = reports.filter(function (r) { return r.status === "pending_review"; }).length;
+      var reviewed = reports.length - pending;
+      byId("tabPending").textContent  = "To review (" + pending + ")";
+      byId("tabReviewed").textContent = "Reviewed (" + reviewed + ")";
+      byId("tabAll").textContent      = "All (" + reports.length + ")";
+      byId("tabPending").setAttribute("aria-pressed", String(filter === "pending"));
+      byId("tabReviewed").setAttribute("aria-pressed", String(filter === "reviewed"));
+      byId("tabAll").setAttribute("aria-pressed", String(filter === "all"));
+
+      var shown = reports.filter(function (r) {
+        if (filter === "pending")  return r.status === "pending_review";
+        if (filter === "reviewed") return r.status === "reviewed";
+        return true;
+      });
+
+      var list = byId("list");
+      list.textContent = "";
+
+      shown.forEach(function (r) {
+        var isPending = r.status === "pending_review";
+
+        var d = document.createElement("details");
+        d.className = "rep " + (isPending ? "pending" : "done");
+        if (r.id === openId) d.open = true;
+        d.addEventListener("toggle", function () { if (d.open) openId = r.id; });
+
+        var s = document.createElement("summary");
+        var who = document.createElement("div");
+        var nm = document.createElement("p"); nm.className = "r-name"; nm.textContent = r.consulName || "";
+        var sub = document.createElement("p"); sub.className = "r-sub";
+        sub.textContent = (r.quarter || "") + " - submitted " + Page.formatDate(r.submittedAt) + (r.reference ? " - " + r.reference : "");
+        who.appendChild(nm); who.appendChild(sub);
+        s.appendChild(who);
+        var b = document.createElement("span");
+        b.className = "badge " + (isPending ? "warn" : "ok");
+        b.textContent = isPending ? "To review" : "Reviewed";
+        s.appendChild(b);
+        d.appendChild(s);
+
+        var review = document.createElement("div");
+        review.className = "review";
+        var dl = document.createElement("dl");
+        var c = r.content || {};
+        addRow(dl, "Summary of activities", c.summary);
+        addRow(dl, "Achievements", c.achievements);
+        addRow(dl, "Challenges", c.challenges);
+        addRow(dl, "Plans for next quarter", c.plans);
+        addRow(dl, "Attachments", (c.attachments || []).join(", "));
+        review.appendChild(dl);
+        d.appendChild(review);
+
+        if (isPending) {
+          var box = document.createElement("div");
+          box.className = "review-box";
+          var field = document.createElement("div");
+          field.className = "field";
+          var label = document.createElement("label");
+          label.textContent = "Comment for the consul (optional)";
+          var area = document.createElement("textarea");
+          area.maxLength = 1000;
+          var id = "comment-" + r.id;
+          area.id = id; label.setAttribute("for", id);
+          field.appendChild(label); field.appendChild(area);
+          box.appendChild(field);
+
+          var actions = document.createElement("div");
+          actions.className = "form-actions";
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn btn-primary";
+          btn.textContent = "Mark as reviewed";
+          btn.addEventListener("click", function () { markReviewed(r.id, area.value.trim(), btn); });
+          actions.appendChild(btn);
+          box.appendChild(actions);
+          d.appendChild(box);
+        } else {
+          var note = document.createElement("p");
+          note.className = "done-note";
+          note.textContent = "Reviewed " + Page.formatDate(r.reviewedAt) +
+            (r.comment ? ". Your comment: " + r.comment : ". No comment added.");
+          d.appendChild(note);
+        }
+        list.appendChild(d);
+      });
+
+      byId("emptyBox").hidden = shown.length > 0;
+      byId("emptyText").textContent = filter === "pending"
+        ? "No reports are waiting for your review."
+        : "No reports to show.";
+    }
+
+    function markReviewed(id, comment, btn) {
+      showActionError("");
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+      Api.reviewHomReport(id, comment)
+        .then(function () { return Api.getHomReports(); })
+        .then(function (data) {
+          reports = data || [];
+          openId = id;
+          render();
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = "Mark as reviewed";
+          if (err && err.code === "AUTH") { window.location.replace("login.html"); return; }
+          showActionError(err && err.code === "LOCKED"
+            ? "This report was already reviewed."
+            : "That did not work. Please try again.");
+          console.error("Review error:", err);
+        });
+    }
+
+    byId("tabPending").addEventListener("click",  function () { filter = "pending";  render(); });
+    byId("tabReviewed").addEventListener("click", function () { filter = "reviewed"; render(); });
+    byId("tabAll").addEventListener("click",      function () { filter = "all";      render(); });
+
+    function load() {
+      showState("loading");
+      Api.getHomReports()
+        .then(function (data) { reports = data || []; render(); showState("content"); })
+        .catch(function (e) { handleError(e, "the reports"); });
+    }
+
+    byId("retryBtn").addEventListener("click", load);
+
+    if (Page.init("reports", ["head_of_mission"])) load();
+  </script>
+</body>
+</html>

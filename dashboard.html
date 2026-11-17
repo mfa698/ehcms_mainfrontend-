@@ -383,8 +383,8 @@
     <nav class="main-nav" aria-label="Main navigation">
       <a href="dashboard.html" class="active" aria-current="page">Dashboard</a>
       <a href="my-profile.html">My Profile</a>
-      <a href="#" class="soon" aria-disabled="true" title="Coming soon">Work Log</a>
-      <a href="#" class="soon" aria-disabled="true" title="Coming soon">Quarterly Reports</a>
+      <a href="work-log.html">Work Log</a>
+      <a href="quarterly-reports.html">Quarterly Reports</a>
       <a href="notifications.html">Notifications
         <span class="nav-badge" id="notifBadge" hidden>0</span>
       </a>
@@ -486,8 +486,12 @@
        ========================================================== */
     var user = Api.getUser();
 
-    if (!Api.isLoggedIn() || !user || user.role !== "honorary_consul") {
-      window.location.replace("login.html");
+    var allowed = Api.isLoggedIn() && user && user.role === "honorary_consul";
+
+    if (!allowed) {
+      // Not logged in -> login. Logged in as another role -> that role's own portal.
+      var other = (Api.isLoggedIn() && user) ? Api.homeFor(user.role) : null;
+      window.location.replace(other || "login.html");
     }
 
     /* ==========================================================
@@ -663,7 +667,7 @@
         });
     }
 
-    if (Api.isLoggedIn()) {
+    if (allowed) {
       byId("headerName").textContent = (user && user.name) || "Honorary Consul";
       byId("demoBanner").hidden = !API_CONFIG.USE_MOCK;
       loadDashboard();
