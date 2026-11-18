@@ -13,25 +13,27 @@
 var API_CONFIG = {
   // true  = DEMO MODE: no server needed, sample data is used.
   // false = REAL MODE: requests go to BASE_URL below.
-  USE_MOCK: true,
+  USE_MOCK: false,
 
-  BASE_URL: "http://localhost:8000",
+  BASE_URL: "http://127.0.0.1:8080",
 
   // Users log in with a Work ID and a password.
   // This is the NAME of the field the backend expects the Work ID in
   // (for example "workId", "work_id" or "username"). Change it to match their login API.
-  LOGIN_ID_FIELD: "workId",
+  LOGIN_ID_FIELD: "work_id",
 
   ENDPOINTS: {
-    login:         "/auth/login",             // POST { <LOGIN_ID_FIELD>: workId, password }
-    dashboard:     "/consul/dashboard",       // GET
+    login:         "/api/auth/login/",        // POST { work_id, password }
+    verifyOtp:     "/api/auth/verify-otp/",   // POST { challenge_id, otp_code }
+    changePassword: "/api/auth/change-password/",
+    dashboard:     "/api/dashboard/consul/",  // GET
     profile:       "/consul/profile",         // GET, PUT { email, phone, officeAddress }
     notifications: "/consul/notifications",   // GET; POST /{id}/read; POST /read-all
     workLog:       "/consul/work-log",        // GET; POST (form data); PATCH /{id} { status }
     reports:       "/consul/reports",         // GET; PUT /{id}/draft; POST /{id}/submit (form data)
 
     // Head of Mission portal
-    homDashboard:     "/hom/dashboard",       // GET
+    homDashboard:     "/api/dashboard/ambassador/", // GET (backend role: ambassador)
     homConsuls:       "/hom/consuls",         // GET (only the consuls assigned to this Head of Mission)
     homReports:       "/hom/reports",         // GET; POST /{id}/review { comment }
     homNotifications: "/hom/notifications",   // GET; POST /{id}/read; POST /read-all
@@ -139,9 +141,20 @@ var MOCK_KEY    = "ehcms_mock";
    answer with status 409 (or 423). The pages show a friendly "locked" message.
    ========================================================== */
 function mapLoginResponse(data) {
+  var backendRole = data.user.role;
+      var role = backendRole === "consul" ? "honorary_consul"
+        : backendRole === "ambassador" ? "head_of_mission" : backendRole;
   return {
-    token: data.token,
-    user: { name: data.user.name, role: data.user.role }
+    token: data.access,
+    refresh: data.refresh,
+    user: {
+      id: data.user.id,
+      workId: data.user.work_id,
+      name: data.user.full_name,
+      email: data.user.email,
+      phone: data.user.phone_number,
+      role: role
+    }
   };
 }
 
@@ -216,8 +229,16 @@ function apiRequest(method, path, body) {
     .then(function (res) {
       if (res.status === 401 || res.status === 403) throw makeError("AUTH", "Not authorised", res.status);
       if (res.status === 409 || res.status === 423) throw makeError("LOCKED", "Record is locked", res.status);
-      if (!res.ok) throw makeError("SERVER", "Server error " + res.status, res.status);
-      return res.status === 204 ? null : res.json();
+      if (res.status === 204) return null;
+      return res.json().then(function (data) {
+        if (!res.ok) {
+          var detail = data.error || data.detail || data.otp_code || data.new_password ||
+            data.confirm_password || data.current_password || data.non_field_errors;
+          if (Array.isArray(detail)) detail = detail.join(" ");
+          throw makeError("SERVER", detail || ("Server error " + res.status), res.status);
+        }
+        return data;
+      });
     });
 }
 
@@ -682,11 +703,49 @@ var Api = {
     body[API_CONFIG.LOGIN_ID_FIELD] = workId;      // the Work ID goes in the field the backend expects
 
     return apiRequest("POST", API_CONFIG.ENDPOINTS.login, body)
-      .then(mapLoginResponse)
-      .then(function (session) {
+      .then(function (data) {
+        if (data.requires_password_change) {
+          var setupSession = {
+            token: data.access,
+            user: mapLoginResponse(data).user
+          };
+          saveSession(setupSession);
+          return { requiresPasswordChange: true, user: setupSession.user };
+        }
+        if (data.requires_otp) {
+          return {
+            requiresOtp: true,
+            challengeId: data.challenge_id,
+            phoneNumber: data.phone_number
+          };
+        }
+        var session = mapLoginResponse(data);
         saveSession(session);
         return session;
       });
+  },
+
+  verifyOtp: function (challengeId, otpCode) {
+    return apiRequest("POST", API_CONFIG.ENDPOINTS.verifyOtp, {
+      challenge_id: challengeId,
+      otp_code: otpCode
+    }).then(function (data) {
+      var session = mapLoginResponse(data);
+      saveSession(session);
+      return session;
+    });
+  },
+
+  changePassword: function (currentPassword, newPassword, confirmPassword) {
+    return apiRequest("POST", API_CONFIG.ENDPOINTS.changePassword, {
+      current_password: currentPassword,
+      new_password: newPassword,
+      confirm_password: confirmPassword
+    }).then(function (data) {
+      var session = mapLoginResponse(data);
+      saveSession(session);
+      return session;
+    });
   },
 
   // Page to open after login for a role (null if that portal does not exist yet)
