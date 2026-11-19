@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -383,7 +383,7 @@
       otpField.hidden = step !== "otp";
       otpHint.hidden = step !== "otp";
       passwordSetupFields.hidden = step !== "password";
-      forgotLink.hidden = step !== "credentials";
+      if (forgotLink) forgotLink.hidden = step !== "credentials";
       btn.textContent = step === "otp" ? "Verify code"
         : step === "password" ? "Set password" : "Log in";
       if (step === "password") passEl.placeholder = "Current temporary password";

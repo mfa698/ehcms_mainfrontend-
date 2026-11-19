@@ -1,4 +1,4 @@
-/* ==========================================================
+﻿/* ==========================================================
    e-HCMS API LAYER
    This is the ONE place that talks to the backend.
    Every page uses it.
@@ -15,7 +15,7 @@ var API_CONFIG = {
   // false = REAL MODE: requests go to BASE_URL below.
   USE_MOCK: false,
 
-  BASE_URL: "http://127.0.0.1:8080",
+  BASE_URL: "http://127.0.0.1:8000",
 
   // Users log in with a Work ID and a password.
   // This is the NAME of the field the backend expects the Work ID in
@@ -26,7 +26,7 @@ var API_CONFIG = {
     login:         "/api/auth/login/",        // POST { work_id, password }
     verifyOtp:     "/api/auth/verify-otp/",   // POST { challenge_id, otp_code }
     changePassword: "/api/auth/change-password/",
-    dashboard:     "/api/dashboard/consul/",  // GET
+    dashboard:     "/consul/dashboard",  // GET
     profile:       "/consul/profile",         // GET, PUT { email, phone, officeAddress }
     notifications: "/consul/notifications",   // GET; POST /{id}/read; POST /read-all
     workLog:       "/consul/work-log",        // GET; POST (form data); PATCH /{id} { status }
@@ -1095,3 +1095,7 @@ var Api = {
     return guardAuth(apiRequest("POST", API_CONFIG.ENDPOINTS.homRecommendations, rec));
   }
 };
+
+
+
+

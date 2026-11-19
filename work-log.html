@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -481,7 +481,7 @@
 
     byId("retryBtn").addEventListener("click", load);
 
-    if (Page.init("worklog")) {
+    if (Page.init("worklog", ["honorary_consul"])) {
       byId("date").value = Page.todayText();
       byId("date").max = Page.todayText();
       load();
