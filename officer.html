@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Missions & Registry | e-HCMS</title>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    :root { --green: #2f9e2f; --text: #111; --header-bg: #e3e3e3; --hero-bg: #ececec; --footer-bg: #ebebeb; --nav-active: #c8c8c8; --hero-overlay: 0.82; --page-pad: clamp(16px, 4vw, 56px); }
+    * { box-sizing: border-box; }
+    body { margin: 0; display: flex; flex-direction: column; min-height: 100vh; font-family: "Roboto Condensed", Arial, sans-serif; color: var(--text); background: var(--hero-bg); }
+    a { color: inherit; text-decoration: none; } [hidden] { display: none !important; }
+    .site-header { background: var(--header-bg); padding: 22px var(--page-pad) 0; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 8px; } .brand-logo { width: 40px; height: 40px; object-fit: contain; }
+    .brand-name { font-size: 17px; line-height: 1.15; text-align: center; }
+    .header-right { display: flex; align-items: center; gap: 14px; } .user-label { font-size: 17px; text-align: right; } .user-label small { display: block; font-size: 14px; color: #555; }
+    .avatar { width: 52px; height: 52px; }
+    .btn { font-family: "Roboto", Arial, sans-serif; padding: 10px 18px; border-radius: 8px; border: 1px solid #666; background: #f2f2f2; cursor: pointer; font-size: 14px; }
+    .btn-small { padding: 11px 18px; font-size: 15px; text-transform: uppercase; background: #ededed; border-color: #9a9a9a; }
+    .btn-primary { background: var(--green); border-color: var(--green); color: #fff; font-weight: 500; }
+    .main-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 18px 0 16px; font-family: "Roboto", Arial, sans-serif; font-size: 16px; }
+    .main-nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 6px; }
+    .main-nav a.active { background: var(--nav-active); }
+    .nav-badge { min-width: 20px; padding: 1px 6px; font-size: 12px; font-weight: 700; color: #fff; background: #b3261e; border-radius: 10px; }
+    .flag-strip { height: 8px; background: linear-gradient(to bottom, #000 0,#000 2px, #fff 2px, #fff 3px, #bb0000 3px, #bb0000 5px, #fff 5px, #fff 6px, #006600 6px, #006600 8px); }
+    .page { position: relative; flex: 1; padding: 36px var(--page-pad) 48px; isolation: isolate; }
+    .page::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,var(--hero-overlay)); z-index: -1; }
+    .container { max-width: 980px; margin: 0 auto; }
+    .page-title { margin: 0 0 4px; font-family: "Roboto", Arial, sans-serif; font-weight: 900; font-size: 34px; color: var(--green); }
+    .card { padding: 22px 24px; margin-bottom: 20px; background: rgba(255,255,255,0.88); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    .card h2 { margin: 0 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; text-transform: uppercase; color: #555; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 20px; }
+    .field label { display: block; margin-bottom: 5px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; }
+    .field input, .field select { width: 100%; padding: 10px; border: 1px solid #b9b9b9; border-radius: 8px; font-family: "Roboto", Arial, sans-serif; }
+    .row { padding: 12px 14px; background: #fff; border: 1px solid #dcdcdc; border-radius: 10px; margin-bottom: 8px; }
+    .site-footer { display: flex; justify-content: space-between; padding: 18px var(--page-pad); background: var(--footer-bg); border-top: 1px solid #d0d0d0; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-top">
+      <a class="brand" href="officer.html"><img data-name="logo" alt="Ministry logo" class="brand-logo"><span class="brand-name">ministry of foreign and<br>diaspora affairs</span></a>
+      <div class="header-right">
+        <span class="user-label"><span id="headerName">HQ Desk Officer</span><small>HQ Desk Officer</small></span>
+        <svg class="avatar" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#d4d4d4"/><circle cx="32" cy="24" r="10" fill="#8e8e8e"/><path d="M12 54c0-11 9-18 20-18s20 7 20 18c-5 5-12 8-20 8s-15-3-20-8z" fill="#8e8e8e"/></svg>
+        <button type="button" class="btn btn-small" id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <nav class="main-nav" id="mainNav"></nav>
+  </header>
+  <div class="flag-strip"></div>
+  <main class="page" id="page">
+    <div class="container">
+      <h1 class="page-title">Missions & Contract Registry</h1>
+      <p style="margin:0 0 22px;font-size:18px;color:#333;">Register diplomatic missions and issue initial Honorary Consul appointment contracts.</p>
+      <section class="card">
+        <h2>Issue Initial Appointment Contract</h2>
+        <form id="contractForm">
+          <div class="form-grid">
+            <div class="field"><label for="cConsul">Honorary Consul *</label><select id="cConsul" required></select></div>
+            <div class="field"><label for="cRef">Contract Reference *</label><input type="text" id="cRef" placeholder="MFA/HC/2026/099" required></div>
+            <div class="field"><label for="cStart">Start Date *</label><input type="date" id="cStart" required></div>
+            <div class="field"><label for="cEnd">End Date *</label><input type="date" id="cEnd" required></div>
+          </div>
+          <div style="margin-top:14px;"><button type="submit" class="btn btn-primary">Issue Contract</button> <span id="cMsg" style="margin-left:10px;font-family:Roboto;"></span></div>
+        </form>
+      </section>
+      <section class="card"><h2>Registered Diplomatic Missions</h2><div id="missionList">Loading missions...</div></section>
+    </div>
+  </main>
+  <footer class="site-footer"><p>Copyright <span id="year">2026</span> Republic of Kenya</p><div><a href="contact.html">Contact us</a></div></footer>
+  <script src="js/api.js"></script><script src="js/common.js"></script>
+  <script>
+    var byId = Page.byId;
+    function loadAll() {
+      Promise.all([Api.getStaffConsuls(), Api.getStaffMissions()]).then(function (res) {
+        var consuls = res, missions = res;
+        var sel = byId("cConsul"); sel.textContent = "";
+        consuls.forEach(function (c) { var o = document.createElement("option"); o.value = c.id; o.textContent = c.full_name + " (" + (c.work_id || "") + ")"; sel.appendChild(o); });
+        var mBox = byId("missionList"); mBox.textContent = "";
+        missions.forEach(function (m) { var d = document.createElement("div"); d.className = "row"; d.innerHTML = "<strong>" + m.name + "</strong> ? " + m.city + ", " + m.country + " (HoM: " + (m.head_of_mission_name || "Unassigned") + ")"; mBox.appendChild(d); });
+      });
+    }
+    byId("contractForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      Api.createStaffAppointment({ consul: byId("cConsul").value, reference_number: byId("cRef").value.trim(), start_date: byId("cStart").value, end_date: byId("cEnd").value })
+        .then(function () { byId("cMsg").textContent = "Appointment contract issued!"; e.target.reset(); })
+        .catch(function (err) { byId("cMsg").textContent = err.message; });
+    });
+    if (Page.init("registry", ["officer", "manager", "super_admin"])) loadAll();
+  </script>
+</body>
+</html>

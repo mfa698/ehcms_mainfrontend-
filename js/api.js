@@ -47,7 +47,10 @@ var API_CONFIG = {
 // (use mapLoginResponse below to translate if theirs are different).
 var ROLE_HOMES = {
   honorary_consul: "dashboard.html",
-  head_of_mission: "hom-dashboard.html"
+  head_of_mission: "hom-dashboard.html",
+  officer: "officer.html",
+  manager: "manager.html",
+  super_admin: "super-admin.html"
   // hq_admin: "hq-dashboard.html"      (added when the HQ portal is built)
 };
 
@@ -1098,4 +1101,20 @@ var Api = {
 
 
 
+
+/* ---------- Staff & Admin Portal API Methods ---------- */
+function asList(d) { return Array.isArray(d) ? d : (d && Array.isArray(d.results) ? d.results : []); }
+
+Api.getStaffConsuls = function () { return guardAuth(apiRequest("GET", "/api/contracts/consuls/").then(asList)); };
+Api.getStaffMissions = function () { return guardAuth(apiRequest("GET", "/api/contracts/missions/").then(asList)); };
+Api.createStaffMission = function (p) { return guardAuth(apiRequest("POST", "/api/contracts/missions/", p)); };
+Api.getStaffAppointments = function () { return guardAuth(apiRequest("GET", "/api/contracts/appointments/").then(asList)); };
+Api.createStaffAppointment = function (p) { return guardAuth(apiRequest("POST", "/api/contracts/appointments/", p)); };
+Api.getStaffRenewals = function () { return guardAuth(apiRequest("GET", "/api/contracts/renewals/").then(asList)); };
+Api.approveStaffRenewal = function (id, p) { return guardAuth(apiRequest("POST", "/api/contracts/renewals/" + id + "/approve/", p)); };
+Api.declineStaffRenewal = function (id, notes) { return guardAuth(apiRequest("POST", "/api/contracts/renewals/" + id + "/decline/", { decision_notes: notes })); };
+Api.getStaffAuditLogs = function () { return guardAuth(apiRequest("GET", "/api/contracts/audit-logs/").then(asList)); };
+Api.getAdminUsers = function () { return guardAuth(apiRequest("GET", "/api/admin/users/").then(asList)); };
+Api.createAdminUser = function (p) { return guardAuth(apiRequest("POST", "/api/admin/users/create/", p)); };
+Api.deactivateAdminUser = function (id) { return guardAuth(apiRequest("POST", "/api/admin/users/" + id + "/deactivate/")); };
 

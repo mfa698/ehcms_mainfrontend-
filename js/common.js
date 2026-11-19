@@ -34,6 +34,33 @@ var Page = (function () {
         { key: "recommendations", label: "Recommendations", href: "hom-recommendations.html", built: true  },
         { key: "notifications",   label: "Notifications",   href: "notifications.html",       built: true, badge: true }
       ]
+    },
+    officer: {
+      title: "HQ Desk Officer",
+      home: "officer.html",
+      nav: [
+        { key: "registry",      label: "Missions & Contracts", href: "officer.html",       built: true },
+        { key: "notifications", label: "Notifications",        href: "notifications.html", built: true, badge: true }
+      ]
+    },
+    manager: {
+      title: "HQ Director",
+      home: "manager.html",
+      nav: [
+        { key: "renewals",      label: "Contract Renewals",   href: "manager.html",       built: true },
+        { key: "registry",      label: "Missions & Registry", href: "officer.html",       built: true },
+        { key: "notifications", label: "Notifications",       href: "notifications.html", built: true, badge: true }
+      ]
+    },
+    super_admin: {
+      title: "Super Admin",
+      home: "super-admin.html",
+      nav: [
+        { key: "users",         label: "User Provisioning",   href: "super-admin.html",   built: true },
+        { key: "renewals",      label: "Contract Renewals",   href: "manager.html",       built: true },
+        { key: "registry",      label: "Missions & Registry", href: "officer.html",       built: true },
+        { key: "notifications", label: "Notifications",       href: "notifications.html", built: true, badge: true }
+      ]
     }
   };
 
