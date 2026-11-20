@@ -20,7 +20,7 @@ var Page = (function () {
         { key: "profile",       label: "My Profile",        href: "my-profile.html",        built: true  },
         { key: "worklog",       label: "Work Log",          href: "work-log.html",          built: true  },
         { key: "reports",       label: "Quarterly Reports", href: "quarterly-reports.html", built: true  },
-        { key: "notifications", label: "Notifications",     href: "notifications.html",     built: true, badge: true }
+        { key: "notifications", label: "Notifications",     href: "notifications.html?v=2",     built: true, badge: true }
       ]
     },
     head_of_mission: {
@@ -32,7 +32,7 @@ var Page = (function () {
         { key: "reports",         label: "Reports",         href: "hom-reports.html",         built: true  },
         { key: "performance",     label: "Performance",     href: "hom-performance.html",     built: true  },
         { key: "recommendations", label: "Recommendations", href: "hom-recommendations.html", built: true  },
-        { key: "notifications",   label: "Notifications",   href: "notifications.html",       built: true, badge: true }
+        { key: "notifications",   label: "Notifications",   href: "notifications.html?v=2",       built: true, badge: true }
       ]
     },
     officer: {
@@ -40,7 +40,7 @@ var Page = (function () {
       home: "officer.html",
       nav: [
         { key: "registry",      label: "Missions & Contracts", href: "officer.html",       built: true },
-        { key: "notifications", label: "Notifications",        href: "notifications.html", built: true, badge: true }
+        { key: "notifications", label: "Notifications",        href: "notifications.html?v=2", built: true, badge: true }
       ]
     },
     manager: {
@@ -49,7 +49,7 @@ var Page = (function () {
       nav: [
         { key: "renewals",      label: "Contract Renewals",   href: "manager.html",       built: true },
         { key: "registry",      label: "Missions & Registry", href: "officer.html",       built: true },
-        { key: "notifications", label: "Notifications",       href: "notifications.html", built: true, badge: true }
+        { key: "notifications", label: "Notifications",       href: "notifications.html?v=2", built: true, badge: true }
       ]
     },
     super_admin: {
@@ -59,7 +59,7 @@ var Page = (function () {
         { key: "users",         label: "User Provisioning",   href: "super-admin.html",   built: true },
         { key: "renewals",      label: "Contract Renewals",   href: "manager.html",       built: true },
         { key: "registry",      label: "Missions & Registry", href: "officer.html",       built: true },
-        { key: "notifications", label: "Notifications",       href: "notifications.html", built: true, badge: true }
+        { key: "notifications", label: "Notifications",       href: "notifications.html?v=2", built: true, badge: true }
       ]
     }
   };
