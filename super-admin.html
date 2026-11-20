@@ -64,6 +64,7 @@
             <div class="field"><label for="uEmail">Official Email *</label><input type="email" id="uEmail" placeholder="jane.doe@ehcms.org" required></div>
             <div class="field"><label for="uPhone">Phone Number (+254...) *</label><input type="tel" id="uPhone" placeholder="+254712345678" required></div>
             <div class="field"><label for="uRole">Role *</label><select id="uRole" required><option value="consul">Honorary Consul</option><option value="ambassador">Head of Mission</option><option value="officer">HQ Desk Officer</option><option value="manager">HQ Director</option><option value="super_admin">Super Admin</option></select></div>
+            <div class="field"><label for="uPassword">Preferred Password *</label><input type="password" id="uPassword" minlength="8" placeholder="Enter preferred password (min 8 chars)" required></div>
           </div>
           <div style="margin-top:14px;"><button type="submit" class="btn btn-primary" id="createBtn">Create Member & Send Credentials</button> <span id="uMsg" style="margin-left:10px;font-family:Roboto;"></span></div>
         </form>
@@ -95,7 +96,7 @@
     byId("userForm").addEventListener("submit", function (e) {
       e.preventDefault();
       var btn = byId("createBtn"), msg = byId("uMsg"); btn.disabled = true;
-      Api.createAdminUser({ work_id: byId("uWorkId").value.trim(), full_name: byId("uName").value.trim(), email: byId("uEmail").value.trim(), phone_number: byId("uPhone").value.trim(), role: byId("uRole").value })
+      Api.createAdminUser({ work_id: byId("uWorkId").value.trim(), full_name: byId("uName").value.trim(), email: byId("uEmail").value.trim(), phone_number: byId("uPhone").value.trim(), role: byId("uRole").value, password: byId("uPassword").value })
         .then(function () { msg.textContent = "Member created and credentials sent!"; e.target.reset(); loadUsers(); })
         .catch(function (err) { msg.textContent = err.message; })
         .finally(function () { btn.disabled = false; });
