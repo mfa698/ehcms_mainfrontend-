@@ -65,10 +65,10 @@
     function loadAll() {
       Promise.all([Api.getStaffRenewals(), Api.getStaffAppointments(), Api.getStaffAuditLogs()]).then(function (res) {
         var renewals = res[0] || [], contracts = res[1] || [], audits = res[2] || [];
-        var rBox = byId("renewalList"); rBox.textContent = renewals.length ? "" : "No renewal cases yet.";
+        var rBox = byId("renewalList"); rBox.textContent = renewals.length - "" : "No renewal cases yet.";
         renewals.forEach(function (rc) {
           var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + (rc.consul_name || "Honorary Consul") + "</strong> ? Contract: <code>" + (rc.contract_reference || "") + "</code></div>";
+          row.innerHTML = "<div><strong>" + (rc.consul_name || "Honorary Consul") + "</strong> - Renewal Case (<code>" + (rc.status || "open").toUpperCase() + "</code>)</div>";
           var right = document.createElement("div"); right.style.display = "flex"; right.style.gap = "8px";
           if (rc.status === "open" || rc.status === "under_review") {
             var app = document.createElement("button"); app.className = "btn btn-primary"; app.textContent = "Approve & Issue New Version";
@@ -87,13 +87,13 @@
         var cBox = byId("contractList"); cBox.textContent = "";
         contracts.forEach(function (c) {
           var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + (c.consul_name || "Consul") + "</strong> ? <code>" + c.reference_number + "</code> (v" + c.version_number + ")</div><span class='badge " + (c.days_remaining <= 30 ? "danger" : "ok") + "'>" + c.status.toUpperCase() + " (" + c.days_remaining + " days)</span>";
+          row.innerHTML = "<div><strong>" + (c.consul_name || "Consul") + "</strong> - <code>" + c.reference_number + "</code> (v" + c.version_number + ")</div><span class='badge " + (c.days_remaining <= 30 - "danger" : "ok") + "'>" + c.status.toUpperCase() + " (" + c.days_remaining + " days)</span>";
           cBox.appendChild(row);
         });
         var aBox = byId("auditList"); aBox.textContent = "";
         audits.slice(0, 15).forEach(function (a) {
           var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + a.action + "</strong> ? " + a.entity_type + " ? Actor: " + (a.actor_work_id || "System") + "</div>";
+          row.innerHTML = "<div><strong>" + a.action + "</strong> - " + a.entity_type + " - Actor: " + (a.actor_work_id || "System") + "</div>";
           aBox.appendChild(row);
         });
       });
