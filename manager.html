@@ -64,7 +64,7 @@
     var byId = Page.byId;
     function loadAll() {
       Promise.all([Api.getStaffRenewals(), Api.getStaffAppointments(), Api.getStaffAuditLogs()]).then(function (res) {
-        var renewals = res, contracts = res, audits = res;
+        var renewals = res[0] || [], contracts = res[1] || [], audits = res[2] || [];
         var rBox = byId("renewalList"); rBox.textContent = renewals.length ? "" : "No renewal cases yet.";
         renewals.forEach(function (rc) {
           var row = document.createElement("div"); row.className = "row";

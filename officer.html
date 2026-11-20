@@ -74,7 +74,7 @@
     var byId = Page.byId;
     function loadAll() {
       Promise.all([Api.getStaffConsuls(), Api.getStaffMissions()]).then(function (res) {
-        var consuls = res, missions = res;
+        var consuls = res[0] || [], missions = res[1] || [];
         var sel = byId("cConsul"); sel.textContent = "";
         consuls.forEach(function (c) { var o = document.createElement("option"); o.value = c.id; o.textContent = c.full_name + " (" + (c.work_id || "") + ")"; sel.appendChild(o); });
         var mBox = byId("missionList"); mBox.textContent = "";
