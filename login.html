@@ -252,6 +252,9 @@
       .btn-login { transition: none; }
       .btn-login:hover { transform: none; }
     }
+      .field { position: relative; }
+    .pw-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #555; padding: 4px; line-height: 1; }
+    .field input[type="password"], .field input.pw-shown { padding-right: 40px; }
   </style>
 </head>
 <body>
@@ -301,7 +304,7 @@
             <circle cx="12" cy="16" r="1"/>
           </svg>
           <input type="password" id="password" name="password" placeholder="Password"
-                 autocomplete="current-password" required>
+                 autocomplete="current-password" required><button type="button" class="pw-eye" onclick="toggleLoginPw('password', this)" title="Show/Hide Password">&#128065;</button>
         </div>
 
         <div class="field" id="otpField" hidden>
@@ -315,16 +318,17 @@
           <div class="field">
             <label class="sr-only" for="newPassword">New password</label>
             <input type="password" id="newPassword" name="newPassword" placeholder="New password"
-                   autocomplete="new-password">
+                   autocomplete="new-password"><button type="button" class="pw-eye" onclick="toggleLoginPw('newPassword', this)" title="Show/Hide Password">&#128065;</button>
           </div>
           <div class="field">
             <label class="sr-only" for="confirmPassword">Confirm new password</label>
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password"
-                   autocomplete="new-password">
+                   autocomplete="new-password"><button type="button" class="pw-eye" onclick="toggleLoginPw('confirmPassword', this)" title="Show/Hide Password">&#128065;</button>
           </div>
         </div>
 
-        <!-- <a class="forgot" id="forgotLink" href="forgot-password.html">Forgot Password?</a> -->
+        <a class="forgot" id="forgotLink" href="#">Forgot Password?</a>
+        <a class="forgot" id="backToLoginLink" href="#" hidden>Back to Log In</a>
 
         <button type="submit" class="btn-login" id="loginBtn">Log in</button>
 
@@ -371,6 +375,29 @@
     var pendingChallengeId = null;
     document.getElementById("demoHint").hidden = !API_CONFIG.USE_MOCK;
 
+    function toggleLoginPw(id, btn) {
+      var el = document.getElementById(id);
+      var show = el.type === "password";
+      el.type = show ? "text" : "password";
+      el.classList.toggle("pw-shown", show);
+      btn.style.color = show ? "#2f9e2f" : "#555";
+    }
+    var backToLoginLink = document.getElementById("backToLoginLink");
+    if (forgotLink) {
+      forgotLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showMessage("", "info");
+        setLoginStep("forgot");
+        userEl.focus();
+      });
+    }
+    if (backToLoginLink) {
+      backToLoginLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showMessage("", "info");
+        setLoginStep("credentials");
+      });
+    }
     function showMessage(text, type) {
       message.textContent = text;
       message.className = "form-message " + type;
@@ -378,14 +405,18 @@
 
     function setLoginStep(step) {
       loginStep = step;
-      workIdField.hidden = step !== "credentials";
-      passwordField.hidden = step === "otp";
-      otpField.hidden = step !== "otp";
-      otpHint.hidden = step !== "otp";
-      passwordSetupFields.hidden = step !== "password";
+      workIdField.hidden = (step !== "credentials" && step !== "forgot");
+      passwordField.hidden = (step === "otp" || step === "forgot" || step === "reset");
+      otpField.hidden = (step !== "otp" && step !== "reset");
+      otpHint.hidden = (step !== "otp" && step !== "reset");
+      passwordSetupFields.hidden = (step !== "password" && step !== "reset");
       if (forgotLink) forgotLink.hidden = step !== "credentials";
+      if (backToLoginLink) backToLoginLink.hidden = (step !== "forgot" && step !== "reset");
       btn.textContent = step === "otp" ? "Verify code"
-        : step === "password" ? "Set password" : "Log in";
+        : step === "password" ? "Set password"
+        : step === "forgot" ? "Send Reset Code"
+        : step === "reset" ? "Reset Password" : "Log in";
+      otpCode.placeholder = step === "reset" ? "6-digit reset code" : "6-digit SMS code";
       if (step === "password") passEl.placeholder = "Current temporary password";
       if (step === "credentials") passEl.placeholder = "Password";
     }
@@ -408,7 +439,40 @@
       showMessage("", "info");
 
       var request;
-      if (loginStep === "credentials") {
+      if (loginStep === "forgot" || loginStep === "reset") {
+        if (false) {}
+      } else if (loginStep === "forgot") {
+        var wid = userEl.value.trim();
+        if (!wid) { showMessage("Enter your Work ID first.", "error"); btn.disabled = false; return; }
+        btn.textContent = "Sending...";
+        request = fetch(API_CONFIG.BASE_URL + "/api/auth/forgot-password/", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ work_id: wid })
+        }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.detail || "Failed"); return d; }); })
+          .then(function (d) {
+            otpHint.textContent = d.detail || "Enter the 6-digit reset code sent to your phone.";
+            otpCode.value = ""; newPassword.value = ""; confirmPassword.value = "";
+            setLoginStep("reset");
+            showMessage("Reset code sent.", "info");
+            return null;
+          });
+      } else if (loginStep === "reset") {
+        var wid2 = userEl.value.trim(), code = otpCode.value.trim(), npw = newPassword.value, cpw = confirmPassword.value;
+        if (!code || !npw || npw !== cpw) {
+          showMessage(!code ? "Enter the 6-digit reset code." : (npw !== cpw ? "Passwords do not match." : "Enter a new password."), "error");
+          btn.disabled = false; return;
+        }
+        btn.textContent = "Resetting...";
+        request = fetch(API_CONFIG.BASE_URL + "/api/auth/reset-password/", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ work_id: wid2, code: code, new_password: npw })
+        }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.detail || "Reset failed"); return d; }); })
+          .then(function (d) {
+            setLoginStep("credentials");
+            passEl.value = "";
+            showMessage(d.detail || "Password reset! Log in with your new password.", "info");
+            return null;
+          });
+      }
+      } else if (loginStep === "credentials") {
         var workId = userEl.value.trim();
         var password = passEl.value;
         if (!workId || !password) {
