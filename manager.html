@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Contract Renewals & Governance | e-HCMS</title>
+  <title>Contract Renewals &amp; Governance | e-HCMS</title>
   <link href="https://googleapis.com" rel="stylesheet">
   <style>
     :root { --green: #2f9e2f; --text: #111; --header-bg: #e3e3e3; --hero-bg: #ececec; --footer-bg: #ebebeb; --nav-active: #c8c8c8; --hero-overlay: 0.82; --page-pad: clamp(16px, 4vw, 56px); }
@@ -51,9 +51,9 @@
   <div class="flag-strip"></div>
   <main class="page" id="page">
     <div class="container">
-      <h1 class="page-title">Contract Renewals & Governance</h1>
+      <h1 class="page-title">Contract Renewals &amp; Governance</h1>
       <p style="margin:0 0 22px;font-size:18px;color:#333;">Approve renewal cases with non-destructive contract versioning and inspect immutable audit logs.</p>
-      <section class="card"><h2>Open & Past Renewal Cases</h2><div id="renewalList">Loading...</div></section>
+      <section class="card"><h2>Open &amp; Past Renewal Cases</h2><div id="renewalList">Loading...</div></section>
       <section class="card"><h2>Global Appointment Contracts</h2><div id="contractList">Loading...</div></section>
       <section class="card"><h2>Immutable Audit Trail</h2><div id="auditList">Loading...</div></section>
     </div>
@@ -65,10 +65,12 @@
     function loadAll() {
       Promise.all([Api.getStaffRenewals(), Api.getStaffAppointments(), Api.getStaffAuditLogs()]).then(function (res) {
         var renewals = res[0] || [], contracts = res[1] || [], audits = res[2] || [];
-        var rBox = byId("renewalList"); rBox.textContent = renewals.length - "" : "No renewal cases yet.";
+        var rBox = byId("renewalList"); rBox.textContent = renewals.length ? "" : "No renewal cases yet.";
         renewals.forEach(function (rc) {
           var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + (rc.consul_name || "Honorary Consul") + "</strong> - Renewal Case (<code>" + (rc.status || "open").toUpperCase() + "</code>)</div>";
+          var left = document.createElement("div");
+          left.innerHTML = "<strong>" + (rc.consul_name || "Honorary Consul") + "</strong> - Renewal Case (" + (rc.status || "open").toUpperCase() + ")";
+          row.appendChild(left);
           var right = document.createElement("div"); right.style.display = "flex"; right.style.gap = "8px";
           if (rc.status === "open" || rc.status === "under_review") {
             var app = document.createElement("button"); app.className = "btn btn-primary"; app.textContent = "Approve & Issue New Version";
@@ -84,16 +86,16 @@
           } else { right.innerHTML = "<span class='badge ok'>" + rc.status.toUpperCase() + "</span>"; }
           row.appendChild(right); rBox.appendChild(row);
         });
-        var cBox = byId("contractList"); cBox.textContent = "";
+        var cBox = byId("contractList"); cBox.textContent = contracts.length ? "" : "No contracts found.";
         contracts.forEach(function (c) {
           var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + (c.consul_name || "Consul") + "</strong> - <code>" + c.reference_number + "</code> (v" + c.version_number + ")</div><span class='badge " + (c.days_remaining <= 30 - "danger" : "ok") + "'>" + c.status.toUpperCase() + " (" + c.days_remaining + " days)</span>";
+          row.innerHTML = "<div><strong>" + (c.consul_name || "Consul") + "</strong> - <code>" + c.reference_number + "</code> (v" + c.version_number + ")</div><span class='badge " + (c.days_remaining <= 30 ? "danger" : "ok") + "'>" + c.status.toUpperCase() + " (" + c.days_remaining + " days)</span>";
           cBox.appendChild(row);
         });
-        var aBox = byId("auditList"); aBox.textContent = "";
+        var aBox = byId("auditList"); aBox.textContent = audits.length ? "" : "No audit logs found.";
         audits.slice(0, 15).forEach(function (a) {
           var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + a.action + "</strong> - " + a.entity_type + " - Actor: " + (a.actor_work_id || "System") + "</div>";
+          row.innerHTML = "<div><strong>" + a.action + "</strong> - " + a.entity_type + " (Actor: " + (a.actor_work_id || "System") + ")</div>";
           aBox.appendChild(row);
         });
       });
