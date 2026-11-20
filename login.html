@@ -445,7 +445,7 @@
         var wid = userEl.value.trim();
         if (!wid) { showMessage("Enter your Work ID first.", "error"); btn.disabled = false; return; }
         btn.textContent = "Sending...";
-        request = fetch(API_CONFIG.BASE_URL + "/api/auth/forgot-password/", {
+        request = fetch((API_CONFIG.BASE_URL || "http://127.0.0.1:8000") + "/api/auth/forgot-password/", {
           method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ work_id: wid })
         }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.detail || "Failed"); return d; }); })
           .then(function (d) {
@@ -462,7 +462,7 @@
           btn.disabled = false; return;
         }
         btn.textContent = "Resetting...";
-        request = fetch(API_CONFIG.BASE_URL + "/api/auth/reset-password/", {
+        request = fetch((API_CONFIG.BASE_URL || "http://127.0.0.1:8000") + "/api/auth/reset-password/", {
           method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ work_id: wid2, code: code, new_password: npw })
         }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.detail || "Reset failed"); return d; }); })
           .then(function (d) {
