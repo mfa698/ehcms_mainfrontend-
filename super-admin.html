@@ -32,6 +32,9 @@
     .card h2 { margin: 0 0 14px; font-family: "Roboto", Arial, sans-serif; font-size: 13px; text-transform: uppercase; color: #555; }
     .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 20px; }
     .field label { display: block; margin-bottom: 5px; font-family: "Roboto", Arial, sans-serif; font-size: 14px; }
+    .pw-wrap { position: relative; display: flex; align-items: center; }
+    .pw-wrap input { padding-right: 40px; }
+    .pw-eye { position: absolute; right: 10px; background: none; border: none; cursor: pointer; font-size: 16px; color: #555; padding: 4px; }
     .field input, .field select { width: 100%; padding: 10px; border: 1px solid #b9b9b9; border-radius: 8px; font-family: "Roboto", Arial, sans-serif; }
     .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border: 1px solid #dcdcdc; border-radius: 10px; margin-bottom: 8px; }
     .badge { padding: 4px 10px; border-radius: 999px; font-family: "Roboto", Arial, sans-serif; font-size: 12px; font-weight: 700; background: #d9f2dc; color: #14551b; }
@@ -64,7 +67,8 @@
             <div class="field"><label for="uEmail">Official Email *</label><input type="email" id="uEmail" placeholder="jane.doe@ehcms.org" required></div>
             <div class="field"><label for="uPhone">Phone Number (+254...) *</label><input type="tel" id="uPhone" placeholder="+254712345678" required></div>
             <div class="field"><label for="uRole">Role *</label><select id="uRole" required><option value="consul">Honorary Consul</option><option value="ambassador">Head of Mission</option><option value="officer">HQ Desk Officer</option><option value="manager">HQ Director</option><option value="super_admin">Super Admin</option></select></div>
-            <div class="field"><label for="uPassword">Preferred Password *</label><input type="password" id="uPassword" minlength="8" placeholder="Enter preferred password (min 8 chars)" required></div>
+            <div class="field"><label for="uPassword">Enter Password *</label><div class="pw-wrap"><input type="password" id="uPassword" minlength="8" placeholder="Enter password (min 8 chars)" required><button type="button" class="pw-eye" onclick="togglePw('uPassword', this)" title="Show/Hide Password">&#128065;</button></div></div>
+            <div class="field"><label for="uPasswordConfirm">Confirm Password *</label><div class="pw-wrap"><input type="password" id="uPasswordConfirm" minlength="8" placeholder="Re-enter password to confirm" required><button type="button" class="pw-eye" onclick="togglePw('uPasswordConfirm', this)" title="Show/Hide Password">&#128065;</button></div></div>
           </div>
           <div style="margin-top:14px;"><button type="submit" class="btn btn-primary" id="createBtn">Create Member & Send Credentials</button> <span id="uMsg" style="margin-left:10px;font-family:Roboto;"></span></div>
         </form>
@@ -93,9 +97,22 @@
         });
       });
     }
+    function togglePw(id, btn) {
+      var inp = byId(id);
+      var show = inp.type === "password";
+      inp.type = show ? "text" : "password";
+      btn.style.color = show ? "#2f9e2f" : "#555";
+    }
     byId("userForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      var btn = byId("createBtn"), msg = byId("uMsg"); btn.disabled = true;
+      var btn = byId("createBtn"), msg = byId("uMsg");
+      if (byId("uPassword").value !== byId("uPasswordConfirm").value) {
+        msg.style.color = "#b3261e";
+        msg.textContent = "Passwords do not match. Please check and try again.";
+        return;
+      }
+      msg.style.color = "#14551b";
+      btn.disabled = true;
       Api.createAdminUser({ work_id: byId("uWorkId").value.trim(), full_name: byId("uName").value.trim(), email: byId("uEmail").value.trim(), phone_number: byId("uPhone").value.trim(), role: byId("uRole").value, password: byId("uPassword").value })
         .then(function () { msg.textContent = "Member created and credentials sent!"; e.target.reset(); loadUsers(); })
         .catch(function (err) { msg.textContent = err.message; })
