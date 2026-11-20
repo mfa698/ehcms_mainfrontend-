@@ -352,15 +352,11 @@
 
   <!-- All backend talking happens in this one file -->
   <script src="js/api.js"></script>
-
   <script>
-    /* ==========================================================
-       1) FORM BEHAVIOUR
-       ========================================================== */
-    var form    = document.getElementById("loginForm");
-    var userEl  = document.getElementById("workId");
-    var passEl  = document.getElementById("password");
-    var btn     = document.getElementById("loginBtn");
+    var form = document.getElementById("loginForm");
+    var userEl = document.getElementById("workId");
+    var passEl = document.getElementById("password");
+    var btn = document.getElementById("loginBtn");
     var message = document.getElementById("formMessage");
     var workIdField = document.getElementById("workIdField");
     var passwordField = document.getElementById("passwordField");
@@ -371,36 +367,25 @@
     var newPassword = document.getElementById("newPassword");
     var confirmPassword = document.getElementById("confirmPassword");
     var forgotLink = document.getElementById("forgotLink");
+    var backToLoginLink = document.getElementById("backToLoginLink");
     var loginStep = "credentials";
     var pendingChallengeId = null;
-    document.getElementById("demoHint").hidden = !API_CONFIG.USE_MOCK;
 
-    function toggleLoginPw(id, btn) {
+    var demoHint = document.getElementById("demoHint");
+    if (demoHint && typeof API_CONFIG !== "undefined") demoHint.hidden = !API_CONFIG.USE_MOCK;
+
+    function toggleLoginPw(id, eyeBtn) {
       var el = document.getElementById(id);
+      if (!el) return;
       var show = el.type === "password";
       el.type = show ? "text" : "password";
       el.classList.toggle("pw-shown", show);
-      btn.style.color = show ? "#2f9e2f" : "#555";
+      if (eyeBtn) eyeBtn.style.color = show ? "#2f9e2f" : "#555";
     }
-    var backToLoginLink = document.getElementById("backToLoginLink");
-    if (forgotLink) {
-      forgotLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        showMessage("", "info");
-        setLoginStep("forgot");
-        userEl.focus();
-      });
-    }
-    if (backToLoginLink) {
-      backToLoginLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        showMessage("", "info");
-        setLoginStep("credentials");
-      });
-    }
+
     function showMessage(text, type) {
       message.textContent = text;
-      message.className = "form-message " + type;
+      message.className = "form-message " + (type || "info");
     }
 
     function setLoginStep(step) {
@@ -410,7 +395,7 @@
       otpField.hidden = (step !== "otp" && step !== "reset");
       otpHint.hidden = (step !== "otp" && step !== "reset");
       passwordSetupFields.hidden = (step !== "password" && step !== "reset");
-      if (forgotLink) forgotLink.hidden = step !== "credentials";
+      if (forgotLink) forgotLink.hidden = (step !== "credentials");
       if (backToLoginLink) backToLoginLink.hidden = (step !== "forgot" && step !== "reset");
       btn.textContent = step === "otp" ? "Verify code"
         : step === "password" ? "Set password"
@@ -419,6 +404,23 @@
       otpCode.placeholder = step === "reset" ? "6-digit reset code" : "6-digit SMS code";
       if (step === "password") passEl.placeholder = "Current temporary password";
       if (step === "credentials") passEl.placeholder = "Password";
+    }
+
+    if (forgotLink) {
+      forgotLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showMessage("", "info");
+        setLoginStep("forgot");
+        userEl.focus();
+      });
+    }
+
+    if (backToLoginLink) {
+      backToLoginLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showMessage("", "info");
+        setLoginStep("credentials");
+      });
     }
 
     function finishLogin(session) {
@@ -439,9 +441,7 @@
       showMessage("", "info");
 
       var request;
-      if (loginStep === "forgot" || loginStep === "reset") {
-        if (false) {}
-      } else if (loginStep === "forgot") {
+      if (loginStep === "forgot") {
         var wid = userEl.value.trim();
         if (!wid) { showMessage("Enter your Work ID first.", "error"); btn.disabled = false; return; }
         btn.textContent = "Sending...";
@@ -471,7 +471,6 @@
             showMessage(d.detail || "Password reset! Log in with your new password.", "info");
             return null;
           });
-      }
       } else if (loginStep === "credentials") {
         var workId = userEl.value.trim();
         var password = passEl.value;
@@ -493,122 +492,59 @@
           }
           if (result.requiresPasswordChange) {
             setLoginStep("password");
-            showMessage("Set a permanent password to continue.", "info");
+            showMessage("Set your new permanent password to continue.", "info");
             newPassword.focus();
             return null;
           }
-          finishLogin(result);
+          finishLogin(result.session);
           return null;
         });
       } else if (loginStep === "otp") {
-        var code = otpCode.value.trim();
-        if (!/^\d{6}$/.test(code)) {
-          showMessage("Enter the 6-digit code from your SMS.", "error");
+        var otp = otpCode.value.trim();
+        if (!otp) {
+          showMessage("Enter the verification code.", "error");
           btn.disabled = false;
           otpCode.focus();
           return;
         }
         btn.textContent = "Verifying...";
-        request = Api.verifyOtp(pendingChallengeId, code).then(finishLogin);
+        request = Api.verifyOtp(pendingChallengeId, otp).then(function (session) {
+          finishLogin(session);
+          return null;
+        });
       } else {
-        if (!passEl.value || !newPassword.value || !confirmPassword.value) {
-          showMessage("Complete all password fields.", "error");
+        var curPw = passEl.value;
+        var np = newPassword.value;
+        var cp = confirmPassword.value;
+        if (!curPw || !np || np !== cp) {
+          showMessage(!curPw ? "Enter your temporary password." : (np !== cp ? "Passwords do not match." : "Enter a new password."), "error");
           btn.disabled = false;
           return;
         }
-        btn.textContent = "Saving password...";
-        request = Api.changePassword(passEl.value, newPassword.value, confirmPassword.value).then(finishLogin);
-      }
-
-      if (request) {
-        request.catch(function (err) {
-          var text = err && err.message ? err.message : "Login failed. Please try again.";
-          if (err && err.code === "AUTH") text = "Incorrect Work ID or password.";
-          if (err && err.code === "NETWORK") text = "Cannot reach the server at " + API_CONFIG.BASE_URL + ".";
-          showMessage(text, "error");
-          btn.disabled = false;
-          setLoginStep(loginStep);
-          console.error("Login error:", err);
-        }).finally(function () {
-          btn.disabled = false;
-          setLoginStep(loginStep);
+        btn.textContent = "Saving...";
+        request = Api.changePassword(curPw, np, cp).then(function () {
+          setLoginStep("credentials");
+          passEl.value = "";
+          showMessage("Password updated. Log in with your new password.", "info");
+          return null;
         });
       }
-    });
 
-    /* ==========================================================
-       2) IMAGE FINDER (same as the landing page)
-       Tries several folders and file endings and uses the first
-       one that loads. The console (F12) prints what it found.
-       Red 404 lines while it searches are normal.
-       ========================================================== */
-    var FOLDERS = ["images", "image", "Images", "Image", "."];
-    var ENDINGS = [".png", ".PNG", ".jpg", ".jpeg", ".webp", ".png.png"];
-    var cache = {};
-
-    function nameVariants(name) {
-      var list = [
-        name,
-        name.replace(/_/g, "-"),
-        name.replace(/_/g, " "),
-        name.replace(/_/g, ""),
-        name.charAt(0).toUpperCase() + name.slice(1),
-        name.toUpperCase(),
-        name + " (1)"
-      ];
-      return list.filter(function (n, i) { return list.indexOf(n) === i; });
-    }
-
-    // exact = true  -> only try the exact name (used for optional images)
-    function findImage(name, exact) {
-      var key = name + (exact ? "|exact" : "");
-      if (cache[key]) return cache[key];
-
-      cache[key] = new Promise(function (resolve) {
-        var tries = [];
-        (exact ? [name] : nameVariants(name)).forEach(function (variant) {
-          FOLDERS.forEach(function (folder) {
-            ENDINGS.forEach(function (end) {
-              tries.push(folder + "/" + variant + end);
-            });
-          });
-        });
-
-        var i = 0;
-        (function next() {
-          if (i >= tries.length) {
-            if (!exact) console.error("Could not find '" + name + "'. Check the exact file name inside the images folder.");
-            resolve(null);
-            return;
-          }
-          var test = new Image();
-          test.onload = function () {
-            console.log("Found " + name + " -> " + tries[i]);
-            resolve(tries[i]);
-          };
-          test.onerror = function () { i++; next(); };
-          test.src = tries[i];
-        })();
+      request.catch(function (err) {
+        showMessage((err && err.message) || "Could not complete request.", "error");
+      }).finally(function () {
+        btn.disabled = false;
+        setLoginStep(loginStep);
       });
-
-      return cache[key];
-    }
-
-    // Background image on the whole page
-    findImage("background_image").then(function (path) {
-      if (path) document.body.style.backgroundImage = 'url("' + path + '")';
     });
 
-    // Optional: your own e-HCMS logo icon (flag + handshake).
-    // Save it as images/login_logo.png and it replaces the built-in flag.
-    findImage("login_logo", true).then(function (path) {
-      if (path) {
-        var img = document.getElementById("loginLogo");
-        img.src = path;
-        img.style.display = "block";
-        document.getElementById("fallbackMark").style.display = "none";
-      }
-    });
+    (function () {
+      var img = document.getElementById("loginLogo");
+      var svg = document.getElementById("fallbackMark");
+      if (!img) return;
+      img.onload = function () { img.style.display = "block"; if (svg) svg.style.display = "none"; };
+      img.src = "images/login_logo.png";
+    })();
   </script>
 </body>
 </html>
