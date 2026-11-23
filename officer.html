@@ -53,8 +53,33 @@
     <div class="container">
       <h1 class="page-title">Missions & Contract Registry</h1>
       <p style="margin:0 0 22px;font-size:18px;color:#333;">Register diplomatic missions and issue initial Honorary Consul appointment contracts.</p>
+            <section class="card">
+        <h2>1. Register New Diplomatic Mission</h2>
+        <form id="missionForm">
+          <div class="form-grid">
+            <div class="field"><label for="mName">Mission Name *</label><input type="text" id="mName" placeholder="Embassy of the Republic of Kenya - London" required></div>
+            <div class="field"><label for="mCountry">Host Country *</label><input type="text" id="mCountry" placeholder="United Kingdom" required></div>
+            <div class="field"><label for="mCity">Host City *</label><input type="text" id="mCity" placeholder="London" required></div>
+            <div class="field"><label for="mHom">Head of Mission (Ambassador)</label><select id="mHom"><option value="">-- Select Ambassador (Optional) --</option></select></div>
+          </div>
+          <div style="margin-top:14px;"><button type="submit" class="btn btn-primary">Create Diplomatic Mission</button> <span id="mMsg" style="margin-left:10px;font-family:Roboto;"></span></div>
+        </form>
+      </section>
+
       <section class="card">
-        <h2>Issue Initial Appointment Contract</h2>
+        <h2>2. Assign Honorary Consul to Mission</h2>
+        <form id="assignForm">
+          <div class="form-grid">
+            <div class="field"><label for="aConsul">Honorary Consul *</label><select id="aConsul" required></select></div>
+            <div class="field"><label for="aMission">Supervising Diplomatic Mission *</label><select id="aMission" required></select></div>
+            <div class="field" style="grid-column:1/-1;"><label for="aCities">Consular Cities / Jurisdiction *</label><input type="text" id="aCities" placeholder="e.g., Frankfurt, Stuttgart & Southern Germany" required></div>
+          </div>
+          <div style="margin-top:14px;"><button type="submit" class="btn btn-primary">Assign Consul to Mission</button> <span id="aMsg" style="margin-left:10px;font-family:Roboto;"></span></div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>3. Issue Initial Appointment Contract</h2>
         <form id="contractForm">
           <div class="form-grid">
             <div class="field"><label for="cConsul">Honorary Consul *</label><select id="cConsul" required></select></div>
@@ -72,15 +97,63 @@
   <script src="js/api.js"></script><script src="js/common.js"></script>
   <script>
     var byId = Page.byId;
-    function loadAll() {
-      Promise.all([Api.getStaffConsuls(), Api.getStaffMissions()]).then(function (res) {
-        var consuls = res[0] || [], missions = res[1] || [];
-        var sel = byId("cConsul"); sel.textContent = "";
-        consuls.forEach(function (c) { var o = document.createElement("option"); o.value = c.id; o.textContent = c.full_name + " (" + (c.work_id || "") + ")"; sel.appendChild(o); });
-        var mBox = byId("missionList"); mBox.textContent = "";
-        missions.forEach(function (m) { var d = document.createElement("div"); d.className = "row"; d.innerHTML = "<strong>" + m.name + "</strong> ? " + m.city + ", " + m.country + " (HoM: " + (m.head_of_mission_name || "Unassigned") + ")"; mBox.appendChild(d); });
+    function staffFetch(path, method, body) {
+      var token = (JSON.parse(localStorage.getItem("ehcms_session") || "{}")).token || "";
+      return fetch("http://127.0.0.1:8000" + path, {
+        method: method || "GET",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: body ? JSON.stringify(body) : undefined
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          if (!r.ok) throw new Error(d.detail || JSON.stringify(d));
+          return d;
+        });
       });
     }
+    function loadAll() {
+      Promise.all([Api.getStaffConsuls(), Api.getStaffMissions(), staffFetch("/api/admin/users/").catch(function () { return []; })]).then(function (res) {
+        var consuls = res[0] || [], missions = res[1] || [], users = res[2] || [];
+        var homSel = byId("mHom"); homSel.innerHTML = '<option value="">-- Select Ambassador (Optional) --</option>';
+        users.filter(function (u) { return u.role === "ambassador"; }).forEach(function (u) {
+          var o = document.createElement("option"); o.value = u.id;
+          o.textContent = u.full_name + " (" + u.work_id + ")";
+          homSel.appendChild(o);
+        });
+        ["cConsul", "aConsul"].forEach(function (id) {
+          var sel = byId(id); sel.textContent = "";
+          consuls.forEach(function (c) {
+            var o = document.createElement("option"); o.value = c.id;
+            var u = c.user || {};
+            o.textContent = (c.full_name || c.user_name || u.full_name || "Honorary Consul") + " (" + (c.work_id || c.user_work_id || u.work_id || c.cities_of_operation || "") + ")";
+            sel.appendChild(o);
+          });
+        });
+        var aMis = byId("aMission"); aMis.textContent = "";
+        var mBox = byId("missionList"); mBox.textContent = "";
+        missions.forEach(function (m) {
+          var opt = document.createElement("option"); opt.value = m.id;
+          opt.textContent = (m.name || "") + " (" + (m.city || "") + ", " + (m.country || "") + ")";
+          aMis.appendChild(opt);
+          var d = document.createElement("div"); d.className = "row";
+          d.textContent = (m.name || "") + " - " + (m.city || "") + ", " + (m.country || "") + " (HoM: " + (m.head_of_mission_name || "Unassigned") + ")";
+          mBox.appendChild(d);
+        });
+      });
+    }
+    byId("missionForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var payload = { name: byId("mName").value.trim(), country: byId("mCountry").value.trim(), city: byId("mCity").value.trim() };
+      if (byId("mHom").value) payload.head_of_mission = byId("mHom").value;
+      staffFetch("/api/contracts/missions/", "POST", payload)
+        .then(function () { byId("mMsg").textContent = "Diplomatic mission created!"; e.target.reset(); loadAll(); })
+        .catch(function (err) { byId("mMsg").textContent = err.message; });
+    });
+    byId("assignForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      staffFetch("/api/contracts/consuls/" + byId("aConsul").value + "/", "PATCH", { mission: byId("aMission").value, cities_of_operation: byId("aCities").value.trim() })
+        .then(function () { byId("aMsg").textContent = "Honorary Consul assigned to mission!"; e.target.reset(); loadAll(); })
+        .catch(function (err) { byId("aMsg").textContent = err.message; });
+    });
     byId("contractForm").addEventListener("submit", function (e) {
       e.preventDefault();
       Api.createStaffAppointment({ consul: byId("cConsul").value, reference_number: byId("cRef").value.trim(), start_date: byId("cStart").value, end_date: byId("cEnd").value })
