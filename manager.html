@@ -34,6 +34,7 @@
     .badge { padding: 4px 10px; border-radius: 999px; font-family: "Roboto", Arial, sans-serif; font-size: 12px; font-weight: 700; }
     .badge.ok { background: #d9f2dc; color: #14551b; } .badge.danger { background: #fde0dd; color: #7a1a14; }
     .site-footer { display: flex; justify-content: space-between; padding: 18px var(--page-pad); background: var(--footer-bg); border-top: 1px solid #d0d0d0; font-size: 15px; }
+    @media print { .site-header, .flag-strip, .site-footer, .btn { display: none !important; } .page { padding: 0; } .card { box-shadow: none; border: 1px solid #ccc; } }
   </style>
 </head>
 <body>
@@ -61,17 +62,43 @@
         <p id="alertScanMsg" style="margin:0 0 12px;font-family:Roboto;font-size:14px;color:#14551b;"></p>
         <div id="renewalList">Loading...</div>
       </section>
-      <section class="card"><h2>Global Appointment Contracts</h2><div id="contractList">Loading...</div></section>
-      <section class="card"><h2>Immutable Audit Trail</h2><div id="auditList">Loading...</div></section>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+          <h2 style="margin:0;">Global Appointment Contracts</h2>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="btn" id="exportContractsCsvBtn">Export Contracts (CSV)</button>
+            <button type="button" class="btn" onclick="window.print()">Print / Save PDF Briefing</button>
+          </div>
+        </div>
+        <div id="contractList">Loading...</div>
+      </section>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+          <h2 style="margin:0;">Immutable Audit Trail</h2>
+          <button type="button" class="btn" id="exportAuditsCsvBtn">Export Audit Log (CSV)</button>
+        </div>
+        <div id="auditList">Loading...</div>
+      </section>
     </div>
   </main>
   <footer class="site-footer"><p>Copyright <span id="year">2026</span> Republic of Kenya</p><div><a href="contact.html">Contact us</a></div></footer>
   <script src="js/api.js"></script><script src="js/common.js"></script>
   <script>
     var byId = Page.byId;
+    var cachedContracts = [], cachedAudits = [];
+    function downloadCsv(filename, rows) {
+      var csv = rows.map(function (r) {
+        return r.map(function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }).join(",");
+      }).join("\r\n");
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
     function loadAll() {
       Promise.all([Api.getStaffRenewals(), Api.getStaffAppointments(), Api.getStaffAuditLogs()]).then(function (res) {
-        var renewals = res[0] || [], contracts = res[1] || [], audits = res[2] || [];
+        var renewals = res[0] || [], contracts = res[1] || [], audits = res[2] || []; cachedContracts = contracts; cachedAudits = audits;
         var rBox = byId("renewalList"); rBox.textContent = renewals.length ? "" : "No renewal cases yet.";
         renewals.forEach(function (rc) {
           var row = document.createElement("div"); row.className = "row";
@@ -107,7 +134,21 @@
         });
       });
     }
-        byId("runAlertsBtn").addEventListener("click", function () {
+        byId("exportContractsCsvBtn").addEventListener("click", function () {
+      var rows = [["Honorary Consul", "Reference Number", "Version", "Start Date", "End Date", "Days Remaining", "Status"]];
+      cachedContracts.forEach(function (c) {
+        rows.push([c.consul_name || "", c.reference_number || "", "v" + (c.version_number || 1), c.start_date || "", c.end_date || "", c.days_remaining, (c.status || "").toUpperCase()]);
+      });
+      downloadCsv("eHCMS_Appointment_Contracts_" + new Date().toISOString().slice(0, 10) + ".csv", rows);
+    });
+    byId("exportAuditsCsvBtn").addEventListener("click", function () {
+      var rows = [["Action", "Entity Type", "Entity ID", "Actor Work ID", "Timestamp"]];
+      cachedAudits.forEach(function (a) {
+        rows.push([a.action || "", a.entity_type || "", a.entity_id || "", a.actor_work_id || "System", a.created_at || ""]);
+      });
+      downloadCsv("eHCMS_Immutable_Audit_Trail_" + new Date().toISOString().slice(0, 10) + ".csv", rows);
+    });
+    byId("runAlertsBtn").addEventListener("click", function () {
       var btn = byId("runAlertsBtn"), msg = byId("alertScanMsg");
       btn.disabled = true; msg.style.color = "#14551b"; msg.textContent = "Scanning active contracts for 90/60/30-day expirations...";
       var sess = JSON.parse(localStorage.getItem("ehcms_session") || sessionStorage.getItem("ehcms_session") || "{}");
