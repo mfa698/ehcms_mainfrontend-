@@ -192,8 +192,8 @@
         role: byId("eRole").value
       };
       if (byId("ePassword").value.trim()) payload.password = byId("ePassword").value.trim();
-      var token = (JSON.parse(localStorage.getItem("ehcms_session") || "{}")).token || "";
-      fetch("http://127.0.0" + byId("eUserId").value + "/update/", {
+      var sess = JSON.parse(localStorage.getItem("ehcms_session") || sessionStorage.getItem("ehcms_session") || "{}"); var token = sess.accessToken || sess.token || sess.access || "";
+      fetch((API_CONFIG.BASE_URL || "http://127.0.0.1:8000") + "/api/admin/users/" + byId("eUserId").value + "/update/", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
         body: JSON.stringify(payload)
