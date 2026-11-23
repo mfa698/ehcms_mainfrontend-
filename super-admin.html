@@ -74,6 +74,26 @@
         </form>
       </section>
       <section class="card"><h2>Registered System Users</h2><div id="userList">Loading users...</div></section>
+      <div id="editModal" hidden style="position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px;">
+        <div class="card" style="max-width:540px;width:100%;margin:0;background:#fff;">
+          <h2>Edit Member Account (<span id="eWorkIdLabel"></span>)</h2>
+          <form id="editUserForm">
+            <input type="hidden" id="eUserId">
+            <div class="form-grid">
+              <div class="field"><label for="eName">Full Name *</label><input type="text" id="eName" required></div>
+              <div class="field"><label for="eEmail">Official Email *</label><input type="email" id="eEmail" required></div>
+              <div class="field"><label for="ePhone">Phone Number (+254...) *</label><input type="tel" id="ePhone" required></div>
+              <div class="field"><label for="eRole">Role *</label><select id="eRole" required><option value="consul">Honorary Consul</option><option value="ambassador">Head of Mission</option><option value="officer">HQ Desk Officer</option><option value="manager">HQ Director</option><option value="super_admin">Super Admin</option></select></div>
+              <div class="field" style="grid-column:1/-1;"><label for="ePassword">Reset Password (leave blank to keep current)</label><div class="pw-wrap"><input type="password" id="ePassword" minlength="8" placeholder="Optional new password (min 8 chars)"><button type="button" class="pw-eye" onclick="togglePw('ePassword', this)" title="Show/Hide Password">&#128065;</button></div></div>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px;align-items:center;">
+              <button type="submit" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+              <button type="button" class="btn" id="cancelEditBtn">Cancel</button>
+              <span id="eMsg" style="font-family:Roboto;font-size:14px;"></span>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </main>
   <footer class="site-footer"><p>Copyright <span id="year">2026</span> Republic of Kenya</p><div><a href="contact.html">Contact us</a></div></footer>
@@ -88,6 +108,11 @@
           row.innerHTML = "<div><strong>" + u.full_name + "</strong> (<code>" + u.work_id + "</code>) - " + u.email + " - " + u.phone_number + "</div>";
           var right = document.createElement("div"); right.style.display = "flex"; right.style.gap = "8px"; right.style.alignItems = "center";
           var badge = document.createElement("span"); badge.className = "badge"; badge.textContent = u.role.toUpperCase(); right.appendChild(badge);
+          var editBtn = document.createElement("button");
+          editBtn.className = "btn";
+          editBtn.textContent = "Edit";
+          editBtn.onclick = function () { openEditModal(u); };
+          right.appendChild(editBtn);
           if (u.is_active && u.role !== "super_admin") {
             var btn = document.createElement("button"); btn.className = "btn btn-warn"; btn.textContent = "Deactivate";
             btn.onclick = function () { if (window.confirm("Deactivate " + u.work_id + "?")) Api.deactivateAdminUser(u.id).then(loadUsers); };
