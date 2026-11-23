@@ -100,34 +100,119 @@
   <script src="js/api.js"></script><script src="js/common.js"></script>
   <script>
     var byId = Page.byId;
+
+    function togglePw(id, btn) {
+      var inp = byId(id);
+      if (!inp) return;
+      var show = inp.type === "password";
+      inp.type = show ? "text" : "password";
+      if (btn) btn.style.color = show ? "#2f9e2f" : "#555";
+    }
+
+    function openEditModal(u) {
+      byId("eUserId").value = u.id;
+      byId("eWorkIdLabel").textContent = u.work_id;
+      byId("eName").value = u.full_name || "";
+      byId("eEmail").value = u.email || "";
+      byId("ePhone").value = u.phone_number || "";
+      byId("eRole").value = u.role || "consul";
+      byId("ePassword").value = "";
+      byId("eMsg").textContent = "";
+      var modal = byId("editModal");
+      modal.removeAttribute("hidden");
+      modal.style.display = "flex";
+    }
+
+    function closeEditModal() {
+      var modal = byId("editModal");
+      modal.style.display = "none";
+      modal.setAttribute("hidden", "");
+    }
+
     function loadUsers() {
       Api.getAdminUsers().then(function (users) {
-        var box = byId("userList"); box.textContent = "";
+        var box = byId("userList");
+        box.textContent = users.length ? "" : "No users found.";
         users.forEach(function (u) {
-          var row = document.createElement("div"); row.className = "row";
-          row.innerHTML = "<div><strong>" + u.full_name + "</strong> (<code>" + u.work_id + "</code>) - " + u.email + " - " + u.phone_number + "</div>";
-          var right = document.createElement("div"); right.style.display = "flex"; right.style.gap = "8px"; right.style.alignItems = "center";
-          var badge = document.createElement("span"); badge.className = "badge"; badge.textContent = u.role.toUpperCase(); right.appendChild(badge);
+          var row = document.createElement("div");
+          row.className = "row";
+
+          var left = document.createElement("div");
+          left.innerHTML = "<strong>" + u.full_name + "</strong> (<code>" + u.work_id + "</code>) - " + (u.email || "") + " - " + (u.phone_number || "");
+          row.appendChild(left);
+
+          var right = document.createElement("div");
+          right.style.display = "flex";
+          right.style.alignItems = "center";
+          right.style.gap = "8px";
+
+          var roleBadge = document.createElement("span");
+          roleBadge.className = "badge " + (u.is_active ? "ok" : "off");
+          roleBadge.textContent = (u.role || "").toUpperCase();
+          right.appendChild(roleBadge);
+
           var editBtn = document.createElement("button");
+          editBtn.type = "button";
           editBtn.className = "btn";
           editBtn.textContent = "Edit";
-          editBtn.onclick = function () { openEditModal(u); };
+          editBtn.addEventListener("click", function () { openEditModal(u); });
           right.appendChild(editBtn);
+
           if (u.is_active && u.role !== "super_admin") {
-            var btn = document.createElement("button"); btn.className = "btn btn-warn"; btn.textContent = "Deactivate";
-            btn.onclick = function () { if (window.confirm("Deactivate " + u.work_id + "?")) Api.deactivateAdminUser(u.id).then(loadUsers); };
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "btn btn-warn";
+            btn.textContent = "Deactivate";
+            btn.addEventListener("click", function () {
+              if (window.confirm("Deactivate " + u.full_name + "?")) {
+                Api.deactivateAdminUser(u.id).then(loadUsers);
+              }
+            });
             right.appendChild(btn);
           }
-          row.appendChild(right); box.appendChild(row);
+
+          row.appendChild(right);
+          box.appendChild(row);
         });
       });
     }
-    function togglePw(id, btn) {
-      var inp = byId(id);
-      var show = inp.type === "password";
-      inp.type = show ? "text" : "password";
-      btn.style.color = show ? "#2f9e2f" : "#555";
-    }
+
+    byId("cancelEditBtn").addEventListener("click", closeEditModal);
+
+    byId("editUserForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = byId("saveEditBtn"), msg = byId("eMsg");
+      btn.disabled = true;
+      msg.style.color = "#14551b";
+      msg.textContent = "Saving...";
+      var payload = {
+        full_name: byId("eName").value.trim(),
+        email: byId("eEmail").value.trim(),
+        phone_number: byId("ePhone").value.trim(),
+        role: byId("eRole").value
+      };
+      if (byId("ePassword").value.trim()) payload.password = byId("ePassword").value.trim();
+      var token = (JSON.parse(localStorage.getItem("ehcms_session") || "{}")).token || "";
+      fetch("http://127.0.0" + byId("eUserId").value + "/update/", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify(payload)
+      }).then(function (r) {
+        return r.json().then(function (d) {
+          if (!r.ok) throw new Error(d.detail || "Update failed");
+          return d;
+        });
+      }).then(function () {
+        closeEditModal();
+        loadUsers();
+      }).catch(function (err) {
+        msg.style.color = "#b3261e";
+        msg.textContent = err.message;
+      }).finally(function () {
+        btn.disabled = false;
+      });
+    });
+
     byId("userForm").addEventListener("submit", function (e) {
       e.preventDefault();
       var btn = byId("createBtn"), msg = byId("uMsg");
@@ -138,12 +223,27 @@
       }
       msg.style.color = "#14551b";
       btn.disabled = true;
-      Api.createAdminUser({ work_id: byId("uWorkId").value.trim(), full_name: byId("uName").value.trim(), email: byId("uEmail").value.trim(), phone_number: byId("uPhone").value.trim(), role: byId("uRole").value, password: byId("uPassword").value })
-        .then(function () { msg.textContent = "Member created and credentials sent!"; e.target.reset(); loadUsers(); })
-        .catch(function (err) { msg.textContent = err.message; })
-        .finally(function () { btn.disabled = false; });
+      msg.textContent = "Creating account & sending credentials...";
+      Api.createAdminUser({
+        work_id: byId("uWorkId").value.trim(),
+        full_name: byId("uName").value.trim(),
+        email: byId("uEmail").value.trim(),
+        phone_number: byId("uPhone").value.trim(),
+        role: byId("uRole").value,
+        password: byId("uPassword").value
+      }).then(function () {
+        msg.textContent = "Member created & credentials sent!";
+        e.target.reset();
+        loadUsers();
+      }).catch(function (err) {
+        msg.style.color = "#b3261e";
+        msg.textContent = err.message;
+      }).finally(function () {
+        btn.disabled = false;
+      });
     });
-    if (Page.init("users", ["super_admin"])) loadUsers();
+
+    if (Page.init("admin", ["super_admin"])) loadUsers();
   </script>
 </body>
 </html>
