@@ -53,7 +53,14 @@
     <div class="container">
       <h1 class="page-title">Contract Renewals &amp; Governance</h1>
       <p style="margin:0 0 22px;font-size:18px;color:#333;">Approve renewal cases with non-destructive contract versioning and inspect immutable audit logs.</p>
-      <section class="card"><h2>Open &amp; Past Renewal Cases</h2><div id="renewalList">Loading...</div></section>
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+          <h2 style="margin:0;">Open &amp; Past Renewal Cases</h2>
+          <button type="button" class="btn btn-primary" id="runAlertsBtn">Run 90/60/30-Day Expiry Alert Scan</button>
+        </div>
+        <p id="alertScanMsg" style="margin:0 0 12px;font-family:Roboto;font-size:14px;color:#14551b;"></p>
+        <div id="renewalList">Loading...</div>
+      </section>
       <section class="card"><h2>Global Appointment Contracts</h2><div id="contractList">Loading...</div></section>
       <section class="card"><h2>Immutable Audit Trail</h2><div id="auditList">Loading...</div></section>
     </div>
@@ -100,6 +107,19 @@
         });
       });
     }
+        byId("runAlertsBtn").addEventListener("click", function () {
+      var btn = byId("runAlertsBtn"), msg = byId("alertScanMsg");
+      btn.disabled = true; msg.style.color = "#14551b"; msg.textContent = "Scanning active contracts for 90/60/30-day expirations...";
+      var sess = JSON.parse(localStorage.getItem("ehcms_session") || sessionStorage.getItem("ehcms_session") || "{}");
+      var token = sess.accessToken || sess.token || sess.access || "";
+      fetch((API_CONFIG.BASE_URL || "http://127.0.0.1:8000") + "/api/contracts/run-expiry-alerts/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }
+      }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.detail || "Scan failed"); return d; }); })
+        .then(function (d) { msg.textContent = d.detail; loadAll(); })
+        .catch(function (err) { msg.style.color = "#b3261e"; msg.textContent = err.message; })
+        .finally(function () { btn.disabled = false; });
+    });
     if (Page.init("renewals", ["manager", "super_admin"])) loadAll();
   </script>
 </body>
