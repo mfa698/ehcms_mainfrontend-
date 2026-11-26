@@ -98,7 +98,7 @@
   <script>
     var byId = Page.byId;
     function staffFetch(path, method, body) {
-      var token = (JSON.parse(localStorage.getItem("ehcms_session") || "{}")).token || "";
+      var sess = JSON.parse(localStorage.getItem("ehcms_session") || sessionStorage.getItem("ehcms_session") || "{}"); var token = sess.accessToken || sess.token || sess.access || "";
       return fetch("http://127.0.0.1:8000" + path, {
         method: method || "GET",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
